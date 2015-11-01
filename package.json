@@ -1,0 +1,22 @@
+{
+  "name": "tanks-for-waiting",
+  "version": "0.0.0",
+  "description": "",
+  "main": "index.html",
+  "scripts": {
+    "test": "mocha",
+    "start": "browser-sync start --server --directory --files='src/*.html, src/main.css'",
+    "start:dist": "browser-sync start --server dist",
+    "sass": "node-sass src/scss/main.scss src/css/main.css"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://jmcreasman@github.com/TanksForWaiting/tanks-for-waiting.git"
+  },
+  "author": "Jon Creasman & Will Butts",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/TanksForWaiting/tanks-for-waiting/issues"
+  },
+  "homepage": "https://github.com/TanksForWaiting/tanks-for-waiting#readme"
+}
