@@ -1,0 +1,17 @@
+bower_components
+
+node_modules
+
+css/
+
+dist/
+
+__pycache__
+
+.env
+
+.direnv
+
+.envrc
+
+staticfiles
