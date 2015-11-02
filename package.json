@@ -18,5 +18,10 @@
   "bugs": {
     "url": "https://github.com/TanksForWaiting/tanks-for-waiting/issues"
   },
-  "homepage": "https://github.com/TanksForWaiting/tanks-for-waiting#readme"
+  "homepage": "https://github.com/TanksForWaiting/tanks-for-waiting#readme",
+  "dependencies": {
+    "bower": "^1.6.5",
+    "browser-sync": "^2.9.11",
+    "node-sass": "^3.4.1"
+  }
 }

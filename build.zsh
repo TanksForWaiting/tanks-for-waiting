@@ -34,6 +34,9 @@ mkdir -p dist/bower_components/angular-route/
 cp bower_components/angular-route/angular-route.js dist/bower_components/angular-route/angular-route.js
 
 mkdir -p dist/bower_components/modernizr/src/
-cp bower_components/modernizr/src/Modernizr.js dist/bower_components/modernizr/src/Modernizr.js
+cp bower_components/modernizr/modernizr.js dist/bower_components/modernizr/modernizr.js
+
+mkdir -p dist/bower_components/font-awesome/src/
+cp bower_components/font-awesome/css/font-awesome.min.css dist/bower_components/font-awesome/css/font-awesome.min.css
 
 npm start
