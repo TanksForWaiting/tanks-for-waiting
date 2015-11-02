@@ -2,6 +2,7 @@ from django.db import models
 
 # Create your models here.
 
+
 class Game(models.Model):
     game_id = models.CharField(max_length=10)
 
@@ -22,9 +23,11 @@ class Game(models.Model):
             self.generate_id()
         super(Game, self).save(*args, **kwargs)
 
+
 class Player(models.Model):
     player_id = models.CharField(max_length=10)
     game = models.ForeignKey(Game, null=True, related_name='players')
+
     def generate_id(self):
         '''Generates a unique 8 character player id'''
         import random
