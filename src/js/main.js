@@ -6,14 +6,14 @@
     var gameSize = { x: canvas.width, y: canvas.height }; // stores the width and height of the canvas for later use for placing entities on the canvas
 
     var self = this;
-    var tick = function() { // tick is going to get run about 60 times a second and it's responsible for running all the main game logic
+    var framesPerSecond = function() { // framesPerSecond is going to get run about 60 times a second and it's responsible for running all the main game logic
       self.update(); //updates the screen
       self.draw(screen, gameSize); //based upon what's happening in the game
-      requestAnimationFrame(tick); // and then asks to run tick again
+      requestAnimationFrame(framesPerSecond); // and then asks to run framesPerSecond again
       // console.log("hello"); // uncomment the console log to see this 60fps in action
     };
 
-    tick();
+    framesPerSecond();
 
   };
 
