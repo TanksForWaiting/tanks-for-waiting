@@ -7,10 +7,10 @@
 
     var self = this;
     var tick = function() { // tick is going to get run about 60 times a second and it's responsible for running all the main game logic
-      self.update();
-      self.draw(screen, gameSize);
-      requestAnimationFrame(tick);
-      // console.log("hello");
+      self.update(); //updates the screen
+      self.draw(screen, gameSize); //based upon what's happening in the game
+      requestAnimationFrame(tick); // and then asks to run tick again
+      // console.log("hello"); // uncomment the console log to see this 60fps in action
     };
 
     tick();
@@ -22,8 +22,8 @@
 
     },
 
-    draw: function() {
-
+    draw: function(screen, gameSize) {
+      screen.fillRect(30, 30, 40, 40);
     }
   };
 
