@@ -1,3 +1,4 @@
+//using Mary Rose Cook and RainingChain's tutorial videos as my two biggest references/resources
 ;(function() { //IIFE
 
   var Game = function(canvasId) { //holds all the main game code
@@ -25,7 +26,10 @@
     },
 
     draw: function(screen, gameSize) {
-      screen.fillRect(30, 30, 40, 40); //first number is the x, the second the y and the final two are the width and height
+      for (var i = 0; i < this.bodies.length; i++) {
+        drawRect(screen, this.bodies[i]);
+      //first number is the x, the second the y and the final two are the width and height
+      }
     }
   };
 
@@ -39,6 +43,12 @@
     update: function() {
 
     }
+  };
+
+  var drawRect = function(screen, body) {
+    screen.fillRect(body.center.x - body.size.x / 2, //x coordinate
+                    body.center.y - body.size.y / 2, // y coordinate
+                    body.size.x, body.size.y); //width and hieght
   };
 
   window.onload = function() { //instantiate the game once the DOM is ready with the canvas
