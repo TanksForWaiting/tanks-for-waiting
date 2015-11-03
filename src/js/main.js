@@ -21,14 +21,16 @@
   };
 
   Game.prototype = { //gives Game a prototype
-    update: function() {
-
+    update: function() { //updates the movement of all the on screen entities
+      for (var i = 0; i < this.bodies.length; i++) {
+        this.bodies[i].update();
+      }
     },
 
     draw: function(screen, gameSize) {
+      screen.clearRect(0, 0, gameSize.x, gameSize.y);
       for (var i = 0; i < this.bodies.length; i++) {
         drawRect(screen, this.bodies[i]);
-      //first number is the x, the second the y and the final two are the width and height
       }
     }
   };
@@ -37,11 +39,20 @@
     this.game = game;
     this.size = { x: 15, y: 15 }; //player size
     this.center = { x: gameSize.x / 2, y: gameSize.y - this.size.x};//tells the game where the player is at the moment, starting at half way through the screen and just above the bottom
+    this.keyboarder = new Keyboarder();
   };
 
   Player.prototype = {
     update: function() {
-
+      if (this.keyboarder.isDown(this.keyboarder.KEYS.LEFT)) {
+        this.center.x -= 2;
+      } else if (this.keyboarder.isDown(this.keyboarder.KEYS.RIGHT)) {
+        this.center.x += 2;
+      } else if (this.keyboarder.isDown(this.keyboarder.KEYS.UP)) {
+        this.center.y -= 2;
+      } else if (this.keyboarder.isDown(this.keyboarder.KEYS.DOWN)) {
+        this.center.y += 2;
+      }
     }
   };
 
@@ -49,6 +60,24 @@
     screen.fillRect(body.center.x - body.size.x / 2, //x coordinate
                     body.center.y - body.size.y / 2, // y coordinate
                     body.size.x, body.size.y); //width and hieght
+  };
+
+  var Keyboarder = function() { //handles keyboard input
+    var keyState= {}; //records if any key that's been pressed is pressed or released
+
+    window.onkeydown = function(e) {
+      keyState[e.keyCode] = true;
+    };
+
+    window.onkeyup = function(e) {
+      keyState[e.keyCode] = false;
+    };
+
+    this.isDown = function(keyCode) {
+      return keyState[keyCode] === true;
+    };
+
+    this.KEYS = { LEFT: 37, UP: 38, RIGHT: 39, DOWN: 40, SPACE: 32};
   };
 
   window.onload = function() { //instantiate the game once the DOM is ready with the canvas
