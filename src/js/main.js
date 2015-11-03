@@ -50,6 +50,8 @@
           this.center.x = 8;
         } else {
         this.center.x -= 2;
+
+
         }
       }
       if (this.keyboarder.isDown(this.keyboarder.KEYS.RIGHT)) {
@@ -81,16 +83,21 @@
     screen.fillRect(body.center.x - body.size.x / 2, //x coordinate
                     body.center.y - body.size.y / 2, // y coordinate
                     body.size.x, body.size.y); //width and hieght
-
-    //drill head
-    // screen.fillRect(body.center.x - body.size.x / 2,
-    //                 body.center.y - body.size.y / 2,
-    //                 body.size.x, body.size.y);
   };
 
   var drawDrillHead = function(screen, body) {
+    // this.keyboarder = new Keyboarder();
     screen.fillRect(body.center.x - 1, body.center.y - body.size.y/2 - 5, 4, 5);
   };
+// drawDrillHead.prototype = {
+//   update: function() {
+//     if (this.keyboarder.isDown(this.keyboarder.KEYS.LEFT)) {
+//       screen.fillRect(body.center.x - body.size.x/2 - 4, body.center.y, 4, 4);
+//   } else if (this.keyboarder.isDown(this.keyboarder.KEYS.RIGHT)) {
+//     screen.fillRect(body.center.x + body.size.x/2, body.center.y, 4, 4);
+//   }
+// }
+// };
 
   var Keyboarder = function() { //handles keyboard input
     var keyState= {}; //records if any key that's been pressed is pressed or released
