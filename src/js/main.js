@@ -37,7 +37,7 @@
 
   var Player = function(game, gameSize) {
     this.game = game;
-    this.size = { x: 15, y: 15 }; //player size
+    this.size = { x: 16, y: 16 }; //player size
     this.center = { x: gameSize.x / 2, y: gameSize.y - this.size.x};//tells the game where the player is at the moment, starting at half way through the screen and just above the bottom
     this.keyboarder = new Keyboarder();
   };
@@ -45,13 +45,32 @@
   Player.prototype = {
     update: function() {
       if (this.keyboarder.isDown(this.keyboarder.KEYS.LEFT)) {
+        if (this.center.x <= 10) {
+          this.center.x = 8;
+        } else {
         this.center.x -= 2;
-      } else if (this.keyboarder.isDown(this.keyboarder.KEYS.RIGHT)) {
+        }
+      }
+      if (this.keyboarder.isDown(this.keyboarder.KEYS.RIGHT)) {
+        if (this.center.x >= 490) {
+          this.center.x = 492;
+        } else {
         this.center.x += 2;
-      } else if (this.keyboarder.isDown(this.keyboarder.KEYS.UP)) {
+        }
+      }
+      if (this.keyboarder.isDown(this.keyboarder.KEYS.UP)) {
+        if (this.center.y <= 10) {
+          this.center.y = 8;
+        }  else {
         this.center.y -= 2;
-      } else if (this.keyboarder.isDown(this.keyboarder.KEYS.DOWN)) {
+        }
+      }
+      if (this.keyboarder.isDown(this.keyboarder.KEYS.DOWN)) {
+        if (this.center.y >= 490) {
+          this.center.y = 492;
+        } else {
         this.center.y += 2;
+        }
       }
     }
   };
