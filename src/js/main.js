@@ -5,6 +5,8 @@
     var screen = canvas.getContext('2d'); //var screen will allow me to draw to the canvas. "2d" leads to the creation of a CanvasRenderingContext2D object representing a two-dimensional rendering context.
     var gameSize = { x: canvas.width, y: canvas.height }; // stores the width and height of the canvas for later use for placing entities on the canvas
 
+    this.bodies = [new Player(this, gameSize)]; //will hold all of the bodies in the game
+
     var self = this;
     var framesPerSecond = function() { // framesPerSecond is going to get run about 60 times a second and it's responsible for running all the main game logic
       self.update(); //updates the screen
@@ -23,7 +25,19 @@
     },
 
     draw: function(screen, gameSize) {
-      screen.fillRect(30, 30, 40, 40);
+      screen.fillRect(30, 30, 40, 40); //first number is the x, the second the y and the final two are the width and height
+    }
+  };
+
+  var Player = function(game, gameSize) {
+    this.game = game;
+    this.size = { x: 15, y: 15 }; //player size
+    this.center = { x: gameSize.x / 2, y: gameSize.y - this.size.x};//tells the game where the player is at the moment, starting at half way through the screen and just above the bottom
+  };
+
+  Player.prototype = {
+    update: function() {
+
     }
   };
 
