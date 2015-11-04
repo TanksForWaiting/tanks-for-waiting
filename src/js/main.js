@@ -31,7 +31,12 @@
       screen.clearRect(0, 0, gameSize.x, gameSize.y);
       for (var i = 0; i < this.bodies.length; i++) {
         drawTank(screen, this.bodies[i]);
-        drawDrillHead(screen, this.bodies[i]);
+        if (i === 0 ) {
+        if (this.bodies[i].keyboarder.isDown(this.bodies[i].keyboarder.KEYS.LEFT)) {
+          drawDrillHead(screen, this.bodies[i]);
+          
+        }
+        }
       }
     }
   };
@@ -86,8 +91,9 @@
   };
 
   var drawDrillHead = function(screen, body) {
-    // this.keyboarder = new Keyboarder();
-    screen.fillRect(body.center.x - 1, body.center.y - body.size.y/2 - 5, 4, 5);
+    // self.keyboarder = self.body.keyboarder;
+
+    screen.fillRect(body.center.x - 1, body.center.y - body.size.y/2 - 5, 10, 10);
   };
 // drawDrillHead.prototype = {
 //   update: function() {
