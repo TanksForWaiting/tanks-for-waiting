@@ -112,7 +112,7 @@
     var drawDrillHeadLeft = function(screen, body) {
         // self.keyboarder = self.body.keyboarder;
 
-        screen.fillRect(body.center.x - body.size.x / 2 - 5, body.center.y - 2, 4, 4);
+        screen.fillRect(body.center.x - body.size.x / 2 - 4, body.center.y - 2, 4, 4);
     };
     var drawDrillHeadRight = function(screen, body) {
         // self.keyboarder = self.body.keyboarder;
