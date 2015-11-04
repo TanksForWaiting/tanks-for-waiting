@@ -34,6 +34,7 @@
             screen.clearRect(0, 0, gameSize.x, gameSize.y);
             for (var i = 0; i < this.bodies.length; i++) {
                 drawTank(screen, this.bodies[i]);
+                drawTarget(screen, this.bodies[i]);
                 if (i === 0) {
                     if (this.bodies[i].keyboarder.isDown(this.bodies[i].keyboarder.KEYS.LEFT)) {
                         drawDrillHeadLeft(screen, this.bodies[i]);
@@ -46,6 +47,10 @@
                     }
                 }
             }
+        },
+
+        addBody: function(body) { //takes a body and pushes it to the bodies array
+          this.bodies.push(body); // example; this.game.addBody(varNameOfBody);
         }
     };
 
@@ -124,15 +129,10 @@
 
         screen.fillRect(body.center.x - 2, body.center.y + body.size.y / 2, 4, 4);
     };
-    // drawDrillHead.prototype = {
-    //   update: function() {
-    //     if (this.keyboarder.isDown(this.keyboarder.KEYS.LEFT)) {
-    //       screen.fillRect(body.center.x - body.size.x/2 - 4, body.center.y, 4, 4);
-    //   } else if (this.keyboarder.isDown(this.keyboarder.KEYS.RIGHT)) {
-    //     screen.fillRect(body.center.x + body.size.x/2, body.center.y, 4, 4);
-    //   }
-    // }
-    // };
+
+    var drawTarget = function(screen, body) {
+        screen.fillRect(20, 20, 10, 10);
+    };
 
     var Keyboarder = function() { //handles keyboard input
         var keyState = {}; //records if any key that's been pressed is pressed or released
