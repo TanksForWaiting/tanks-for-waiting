@@ -1,8 +1,9 @@
 from rest_framework import serializers
 from .models import Player, Game
+import requests
 
 class PlayerSerializer(serializers.ModelSerializer):
-    player_id = serializers.CharField(max_length=10, read_only=True)
+    player_id = serializers.UUIDField(read_only=True)
 
     class Meta:
         model = Player
@@ -10,7 +11,7 @@ class PlayerSerializer(serializers.ModelSerializer):
 
 
 class GameSerializer(serializers.ModelSerializer):
-    game_id = serializers.CharField(max_length=10, read_only=True)
+    game_id = serializers.UUIDField( read_only=True)
     players = serializers.StringRelatedField(many=True, read_only=True)
 
     class Meta:
