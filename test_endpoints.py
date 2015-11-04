@@ -8,6 +8,7 @@ def test_post():
     assert g.status_code == 201
     assert len(p.json()['player_id']) == 8
     assert len(g.json()['game_id']) == 8
+    assert g.json()['players'][0] == player_id
 
 def test_get():
     p = requests.get('http://localhost:8000/api/players/')
