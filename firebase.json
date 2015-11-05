@@ -1,0 +1,9 @@
+{
+  "firebase": "tanks-for-waiting",
+  "public": "dist",
+  "ignore": [
+    "firebase.json",
+    "**/.*",
+    "**/node_modules/**"
+  ]
+}
