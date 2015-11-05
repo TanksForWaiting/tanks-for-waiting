@@ -53,7 +53,6 @@
           this.bodies.push(body); // example; this.game.addBody(varNameOfBody);
         }
     };
-
     var Player = function(game, gameSize) {
         this.game = game;
         this.size = {
@@ -74,8 +73,6 @@
                     this.center.x = 8;
                 } else {
                     this.center.x -= 2;
-
-
                 }
             }
             if (this.keyboarder.isDown(this.keyboarder.KEYS.RIGHT)) {
@@ -110,23 +107,18 @@
     };
 
     var drawDrillHeadLeft = function(screen, body) {
-        // self.keyboarder = self.body.keyboarder;
-
         screen.fillRect(body.center.x - body.size.x / 2 - 4, body.center.y - 2, 4, 4);
     };
-    var drawDrillHeadRight = function(screen, body) {
-        // self.keyboarder = self.body.keyboarder;
 
+    var drawDrillHeadRight = function(screen, body) {
         screen.fillRect(body.center.x + body.size.x / 2, body.center.y - 2, 4, 4);
     };
-    var drawDrillHeadUp = function(screen, body) {
-        // self.keyboarder = self.body.keyboarder;
 
+    var drawDrillHeadUp = function(screen, body) {
         screen.fillRect(body.center.x - 2, body.center.y - body.size.y / 2 - 4, 4, 4);
     };
-    var drawDrillHeadDown = function(screen, body) {
-        // self.keyboarder = self.body.keyboarder;
 
+    var drawDrillHeadDown = function(screen, body) {
         screen.fillRect(body.center.x - 2, body.center.y + body.size.y / 2, 4, 4);
     };
 
@@ -161,4 +153,16 @@
     window.onload = function() { //instantiate the game once the DOM is ready with the canvas
         new Game("screen"); //pass in the id of the canvas I want to write into
     };
+
+$(function () {
+
+  $.ajax({
+    type: 'GET',
+    url: 'http://localhost:3002/src/tankstesting.json',
+    success: function(data) {
+      console.log('success', data);
+    }
+  });
+});
+
 })(); // End of IIFE
