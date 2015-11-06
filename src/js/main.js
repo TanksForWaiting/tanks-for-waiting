@@ -10,12 +10,7 @@
         }; // stores the width and height of the canvas for later use for placing entities on the canvas
 
         this.bodies = [new Player(this, gameSize)]; //will hold all of the bodies in the game
-        this.targets = [new Target(this, gameSize),
-            new Target(this, gameSize),
-            new Target(this, gameSize),
-            new Target(this, gameSize),
-            new Target(this, gameSize)
-        ];
+
         var self = this;
         var framesPerSecond = function() { // framesPerSecond is going to get run about 60 times a second and it's responsible for running all the main game logic
             self.update(); //updates the screen
@@ -39,7 +34,6 @@
             screen.clearRect(0, 0, gameSize.x, gameSize.y);
             for (var i = 0; i < this.bodies.length; i++) {
                 drawTank(screen, this.bodies[i]);
-                // drawTarget(screen, this.bodies[i]);
                 if (i === 0) {
                     if (this.bodies[i].keyboarder.isDown(this.bodies[i].keyboarder.KEYS.LEFT)) {
                         drawDrillHeadLeft(screen, this.bodies[i]);
@@ -52,15 +46,10 @@
                     }
                 }
             }
-            for (i = 0; i < this.targets.length; i++) {
-                drawTarget(screen, this.targets[i]);
-                // drawTarget(screen, this.bodies[i]);
-
-            }
         },
 
         addBody: function(body) { //takes a body and pushes it to the bodies array
-            this.bodies.push(body); // example; this.game.addBody(varNameOfBody);
+          this.bodies.push(body); // example; this.game.addBody(varNameOfBody);
         }
     };
     var Player = function(game, gameSize) {
@@ -109,24 +98,6 @@
         }
     };
 
-    var Target = function(game, gameSize) {
-        this.game = game;
-        this.size = {
-            x: 10,
-            y: 10
-        }; //player size
-        this.center = {
-            x: Math.random() * gameSize.x,
-            y: Math.random() * gameSize.y
-        }; //tells the game where the player is at the moment, starting at half way through the screen and just above the bottom
-    };
-
-    Target.prototype = {
-        update: function() {
-            console.log("helllo");
-        }
-    };
-
     var drawTank = function(screen, body) {
         //tank body
         screen.fillRect(body.center.x - body.size.x / 2, //x coordinate
@@ -150,10 +121,8 @@
         screen.fillRect(body.center.x - 2, body.center.y + body.size.y / 2, 4, 4);
     };
 
-    var drawTarget = function(screen, target) {
-        screen.fillRect(target.center.x - target.size.x / 2, //x coordinate
-            target.center.y - target.size.y / 2, // y coordinate
-            target.size.x, target.size.y);
+    var drawTarget = function(screen, body) {
+        screen.fillRect(20, 20, 10, 10);
     };
 
     var Keyboarder = function() { //handles keyboard input
@@ -184,16 +153,9 @@
         new Game("screen"); //pass in the id of the canvas I want to write into
     };
 
-    $(function() {
-
-        $.ajax({
-            type: 'GET',
-            url: 'http://localhost:3004/src/tankstesting.json',
-            success: function(data) {
-                console.log('success', data);
-
-            }
-        });
+    $('#button').click(function() {
+      $('#button').addClass('hide-me');
+      $('#screen').removeClass('hide-me');
     });
 
 })(); // End of IIFE
