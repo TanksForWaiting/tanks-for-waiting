@@ -189,4 +189,14 @@
       $('#screen').removeClass('hide-me');
     });
 
+    angular.module('tanks-for-waiting', [ ])
+    .run(function($http, $rootScope){
+
+      $http.get('../tankstesting.json')
+        .then(function (response){
+          $rootScope.user = response.data;
+        });
+
+    });
+
 })(); // End of IIFE
