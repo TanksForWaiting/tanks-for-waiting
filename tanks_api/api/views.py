@@ -77,7 +77,7 @@ class TargetViewSet(viewsets.ModelViewSet):
 #     t = kwargs['instance']
 #     g = t.game
 #     if t.game != None:
-#         requests.post('https://tanks-for-waiting.firebaseio.com/games/{}/targets/{}/x.json'.format(g.game_id), data=str(t.x))
-#         requests.post('https://tanks-for-waiting.firebaseio.com/games/{}/targets/{}/y.json'.format(g.game_id), data=str(t.y))
+#         requests.put('https://tanks-for-waiting.firebaseio.com/games/{}/targets/{}/x.json'.format(g.game_id, t.target_id), data=str(t.x))
+#         requests.put('https://tanks-for-waiting.firebaseio.com/games/{}/targets/{}/y.json'.format(g.game_id, t.target_id), data=str(t.y))
 #     else:
 #         pass

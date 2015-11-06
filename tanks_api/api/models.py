@@ -16,7 +16,7 @@ class Game(models.Model):
 
 
 class Player(models.Model):
-    player_id = models.UUIDField(default=uuid.uuid4, editable=False)
+    player_id = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
     score = models.PositiveSmallIntegerField(default=0)
     x = models.PositiveSmallIntegerField(default=24)
     y = models.PositiveSmallIntegerField(default=24)
@@ -27,6 +27,7 @@ class Player(models.Model):
         return str(self.player_id)
 
 class Target(models.Model):
+    target_id = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
     game = models.ForeignKey(Game, null=True, to_field='game_id', related_name='targets')
     x = models.PositiveSmallIntegerField()
     y = models.PositiveSmallIntegerField()
