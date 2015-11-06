@@ -3,6 +3,9 @@ from rest_framework import viewsets
 from rest_framework.mixins import CreateModelMixin, ListModelMixin, RetrieveModelMixin
 from .serializers import GameSerializer, PlayerSerializer
 from .models import Game, Player
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+import requests
 # from rest_framework.decorators import api_view
 
 # Create your views here.
@@ -39,3 +42,14 @@ class PlayerViewSet(viewsets.GenericViewSet,
                                 RetrieveModelMixin):
     queryset = Player.objects.all()
     serializer_class = PlayerSerializer
+
+# @receiver(post_save, sender=Game)
+# def hello_world(sender, **kwargs):
+#     # return print(kwargs['instance'])
+#     g = kwargs['instance']
+#     p = g.players.first()
+#     if len(g.players.all()) == 0:
+#         pass
+#     else:
+#         return print('{}       {}'.format(g.game_id, p.player_id))
+#     # try requests.put('https://tanks-for-waiting.firebaseapp.com/games/{}/tanks/{}'.format(g.game_id, p.player_id), data={"x":20,"y":20})
