@@ -192,7 +192,8 @@
     angular.module('tanks-for-waiting', [ ])
     .run(function($http, $rootScope){
 
-      $http.get('../tankstesting.json')
+
+      $http.get('/src/tankstesting.json')
         .then(function (response){
           $rootScope.user = response.data;
         });
