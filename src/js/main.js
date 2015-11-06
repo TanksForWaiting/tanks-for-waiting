@@ -34,7 +34,6 @@
             screen.clearRect(0, 0, gameSize.x, gameSize.y);
             for (var i = 0; i < this.bodies.length; i++) {
                 drawTank(screen, this.bodies[i]);
-                // drawTarget(screen, this.bodies[i]);
                 if (i === 0) {
                     if (this.bodies[i].keyboarder.isDown(this.bodies[i].keyboarder.KEYS.LEFT)) {
                         drawDrillHeadLeft(screen, this.bodies[i]);
@@ -154,15 +153,9 @@
         new Game("screen"); //pass in the id of the canvas I want to write into
     };
 
-$(function () {
-
-  $.ajax({
-    type: 'GET',
-    url: 'http://localhost:3002/src/tankstesting.json',
-    success: function(data) {
-      console.log('success', data);
-    }
-  });
-});
+    $('#button').click(function() {
+      $('#button').addClass('hide-me');
+      $('#screen').removeClass('hide-me');
+    });
 
 })(); // End of IIFE
