@@ -17,11 +17,13 @@ from django.conf.urls import include, url
 from django.contrib import admin
 from django.views.generic import TemplateView
 from rest_framework import routers
-from api.views import GameViewSet, PlayerViewSet
+from api.views import GameViewSet, PlayerViewSet, TargetViewSet
 
 router = routers.SimpleRouter()
 router.register(r'games', GameViewSet)
 router.register(r'players', PlayerViewSet)
+router.register(r'targets', TargetViewSet)
+
 urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
     url(r'^api/', include(router.urls)),
