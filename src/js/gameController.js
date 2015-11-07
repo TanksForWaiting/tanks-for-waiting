@@ -1,6 +1,6 @@
 (function() { //IIFE
 
-    var DJANGO_SERVER_URL = "abc";
+    var DJANGO_SERVER_URL = "https://cryptic-citadel-5628.herokuapp.com/api";
     var FIREBASE_SERVER_URL = "https://tanks-for-waiting.firebaseio.com";
 
     angular.module('tanks-for-waiting').controller('GameController', GameController);
