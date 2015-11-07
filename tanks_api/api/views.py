@@ -47,20 +47,11 @@ class TargetViewSet(viewsets.ModelViewSet):
     queryset = Target.objects.all()
     serializer_class = TargetSerializer
 
-    def get_serializer(self, *args, **kwargs):
-        """
-        Return the serializer instance that should be used for validating and
-        deserializing input, and for serializing output.
-        """
-        try:
-            game_id = kwargs['data']['game_id']
-            serializer_class = self.get_serializer_class()
-            kwargs['context'] = {'game':get_object_or_404(Game, game_id=game_id)}
-            return serializer_class(*args, **kwargs)
-        except KeyError:
-            serializer_class = self.get_serializer_class()
-            kwargs['context'] = self.get_serializer_context()
-            return serializer_class(*args, **kwargs)
+    def get_serializer_context(self):
+        context = super().get_serializer_context().copy()
+        context['game'] = get_object_or_404(Game, game_id=self.kwargs['games_pk'])
+        return context
+    
 
 # @receiver(post_save, sender=Game)
 # def put_tanks(sender, **kwargs):
