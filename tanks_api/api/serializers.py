@@ -6,10 +6,11 @@ class TargetSerializer(serializers.ModelSerializer):
     x = serializers.IntegerField(read_only=True, min_value=0)
     y = serializers.IntegerField(read_only=True, min_value=0)
     game = serializers.StringRelatedField(read_only=True)
+    target_id = serializers.UUIDField(read_only=True)
 
     class Meta:
         model = Target
-        fields = ('x', 'y', 'game')
+        fields = ('x', 'y', 'game', 'target_id')
 
     def create(self, validated_data):
         t = Target(game=self.context['game'])
