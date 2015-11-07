@@ -4,9 +4,9 @@
     var FIREBASE_SERVER_URL = "https://tanks-for-waiting.firebaseio.com";
 
     angular.module('tanks-for-waiting').controller('GameController', GameController);
-    GameController.$inject = ['$scope', '$http', '$firebaseObject'];
+    GameController.$inject = ['$scope', '$http', '$firebaseObject', '$interval'];
 
-    function GameController($scope, $http, $firebaseObject) {
+    function GameController($scope, $http, $firebaseObject, $interval) {
 
         var firebaseref = null;
         var playerID = null; //player_id stored here
@@ -63,15 +63,18 @@
                 new Target(this, gameSize)
             ];
             var self = this;
-            var framesPerSecond = function() { // framesPerSecond is going to get run about 60 times a second and it's responsible for running all the main game logic
-                self.update(); //updates the screen
-                self.draw(screen, gameSize); //based upon what's happening in the game
-                requestAnimationFrame(framesPerSecond); // and then asks to run framesPerSecond again
-                // console.log("hello"); // uncomment the console log to see this 60fps in action
-            };
-
-            framesPerSecond();
-
+            // var framesPerSecond = function() { // framesPerSecond is going to get run about 60 times a second and it's responsible for running all the main game logic
+            //     self.update(); //updates the screen
+            //     self.draw(screen, gameSize); //based upon what's happening in the game
+            //     requestAnimationFrame(framesPerSecond); // and then asks to run framesPerSecond again
+            //     // console.log("hello"); // uncomment the console log to see this 60fps in action
+            // };
+            //
+            // framesPerSecond();
+            $interval(function() {
+              self.update(); //updates the screen
+              self.draw(screen, gameSize); //based upon what's happening in the game
+            }, 16.7);
         };
 
         Game.prototype = { //gives Game a prototype
