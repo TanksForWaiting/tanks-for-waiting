@@ -21,11 +21,11 @@
         <![endif]-->
 
         <!-- Add your site or application content here -->
-        <main class="container" ng-app="tanks-for-waiting">
+        <div class="container" ng-app="tanks-for-waiting" ng-controller="GameController">
           <p>Player Score:{{user.score}}</p>
           <button id="button" class="">Click to Start Driving your Tank!</button>
           <canvas id="screen" class="hide-me" width="500" height="500" style="border:1px solid #000000;">
-        </main>
+        </div>
 
         <script src="../bower_components/jquery/dist/jquery.js"></script>
         <script src="../bower_components/angular/angular.js"></script>
@@ -34,6 +34,7 @@
         <script>window.jQuery || document.write('<script src="js/vendor/jquery-1.11.2.min.js"><\/script>')</script>
         <script src="js/plugins.js"></script>
         <script src="js/main.js"></script>
+        <script src="js/gameController.js"></script>
 
         <!-- Google Analytics: change UA-XXXXX-X to be your site's ID. -->
         <script>

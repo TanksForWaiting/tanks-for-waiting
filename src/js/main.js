@@ -180,24 +180,25 @@
         };
     };
 
-    window.onload = function() { //instantiate the game once the DOM is ready with the canvas
-        new Game("screen"); //pass in the id of the canvas I want to write into
-    };
+    // window.onload = function() { //instantiate the game once the DOM is ready with the canvas
+    //     new Game("screen"); //pass in the id of the canvas I want to write into
+    // };
 
     $('#button').click(function() {
       $('#button').addClass('hide-me');
       $('#screen').removeClass('hide-me');
     });
 
-    angular.module('tanks-for-waiting', [ ])
-    .run(function($http, $rootScope){
-
-
-      $http.get('/src/tankstesting.json')
-        .then(function (response){
-          $rootScope.user = response.data;
-        });
-
-    });
+    angular.module('tanks-for-waiting', [ ]);
+    // .run(function($http, $rootScope){
+    //
+    //
+    //   $http.get('/src/tankstesting.json')
+    //     .then(function (response){
+    //       $rootScope.user = response.data;
+    //       console.log("hello");
+    //     });
+    //
+    //});
 
 })(); // End of IIFE
