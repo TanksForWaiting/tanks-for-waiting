@@ -10,6 +10,7 @@ BLACKLIST_APPS = ['debugtoolbar', 'django_extensions']
 INSTALLED_APPS = tuple([app for app in INSTALLED_APPS if app not in BLACKLIST_APPS])
 
 DATABASES['default'] = dj_database_url.config()
+DATABASES['default']['ENGINE'] = 'django.db.backends.postgresql_psycopg2'
 
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
