@@ -39,4 +39,5 @@ class GameSerializer(serializers.ModelSerializer):
         g = Game()
         g.save()
         g.players.add(self.context['player'])
+        g.save()
         return g
