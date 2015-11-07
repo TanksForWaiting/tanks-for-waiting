@@ -23,8 +23,7 @@
         <!-- Add your site or application content here -->
         <div class="container" ng-app="tanks-for-waiting" ng-controller="GameController">
           <p>Player Score:{{score}}</p>
-          {{gameNotRunning}}
-          <button ng-click="startGame()" ng-show="gameNotRunning">Click to Start Driving your Tank!</button>
+          <button ng-click="startGame()" ng-hide="gameRunning">Click to Start Driving your Tank!</button>
           <canvas id="screen" class="hide-me" width="500" height="500" style="border:1px solid #000000;">
         </div>
 
