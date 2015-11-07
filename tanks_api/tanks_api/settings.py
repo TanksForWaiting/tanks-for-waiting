@@ -85,8 +85,8 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'tanks_api',
-        'USER': '',
-        'PASSWORD': '',
+        'USER': 'tanks_api',
+        'PASSWORD': 'password123',
         'HOST': '',
         'PORT': '',
     }
@@ -115,6 +115,14 @@ STATIC_URL = '/static/'
 STATIC_ROOT = 'staticfiles'
 
 CORS_ORIGIN_ALLOW_ALL = True
+
+REST_FRAMEWORK = {
+    # Use Django's standard `django.contrib.auth` permissions,
+    # or allow read-only access for unauthenticated users.
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.AllowAny'
+    ]
+}
 
 # CORS_ORIGIN_WHITELIST = (
 #         'https://tanks-for-waiting.firebaseio.com',
