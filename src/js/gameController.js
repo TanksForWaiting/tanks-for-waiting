@@ -87,6 +87,7 @@
                   if (colliding(thisPlayer, this.targets[i])) {
                     console.log("HIT!");
                     $scope.score += 1;
+                    this.targets.splice(i, 1);
                   }
                 }
             },
