@@ -1,51 +1,51 @@
 (function() { //IIFE
 
-    var DJANGO_SERVER_URL = "https://cryptic-citadel-5628.herokuapp.com/api";
-    var FIREBASE_SERVER_URL = "https://tanks-for-waiting.firebaseio.com";
+  var DJANGO_SERVER_URL = "https://cryptic-citadel-5628.herokuapp.com/api";
+  var FIREBASE_SERVER_URL = "https://tanks-for-waiting.firebaseio.com";
 
-    angular.module('tanks-for-waiting').controller('GameController', GameController);
-    GameController.$inject = ['$scope', '$http', '$firebaseObject', '$interval'];
+  angular.module('tanks-for-waiting').controller('GameController', GameController);
+  GameController.$inject = ['$scope', '$http', '$firebaseObject'];
 
-    function GameController($scope, $http, $firebaseObject, $interval) {
+  function GameController($scope, $http, $firebaseObject) {
 
-        var firebaseref = null;
-        var playerID = null; //player_id stored here
-        var gameID = null; //game_id stored here
-        $scope.gameRunning = false;
-        $scope.score = 0;
-        /*
-        *This begins the process of game selection.
-        POST to /players/ for player_id
-        Returns player_id
-        Stores player_id
-        POST to games/player_id
-        Returns game_id
-        Stores game_id
-        Starts game
-        */
-        $scope.startGame = function() {
-            $http.post(DJANGO_SERVER_URL + "/players/")
-                .then(function(response) {
-                    playerID = response.data.player_id;
-                    //this is where I would display the tutorial
-                    $http.post(DJANGO_SERVER_URL + "/games/" + playerID)
-                        .then(function(response) {
-                                gameID = response.data;
-                                firebaseref = new Firebase (FIREBASE_SERVER_URL + "/games/" + gameID); //websocket to firebase api
-                                $scope.game = $firsebaseObject (firebaseref); //websocket to firebase api
-                                // $scope.gameRunning = true;
-                                // new Game("screen");
-                            },
-                            function(errobj) {
-                                alert("Game request failed: " + JSON.stringify(errobj, null, 2));
-                            });
-                }, function(errobj) {
-                  $scope.gameRunning = true;
-                  new Game("screen");
-                    // alert("Player request failed: " + JSON.stringify(errobj));
-                });
-            console.log("click");
-        };
+      var firebaseref = null;
+      var playerID = null; //player_id stored here
+      var gameID = null; //game_id stored here
+      $scope.gameRunning = false;
+      $scope.score = 0;
+      /*
+      *This begins the process of game selection.
+      POST to /players/ for player_id
+      Returns player_id
+      Stores player_id
+      POST to games/player_id
+      Returns game_id
+      Stores game_id
+      Starts game
+      */
+      $scope.startGame = function() {
+          $http.post(DJANGO_SERVER_URL + "/players/")
+              .then(function(response) {
+                  playerID = response.data.player_id;
+                  //this is where I would display the tutorial
+                  $http.post(DJANGO_SERVER_URL + "/games/" + playerID)
+                      .then(function(response) {
+                              gameID = response.data;
+                              firebaseref = new Firebase (FIREBASE_SERVER_URL + "/games/" + gameID); //websocket to firebase api
+                              $scope.game = $firsebaseObject (firebaseref); //websocket to firebase api
+                              // $scope.gameRunning = true;
+                              // new Game("screen");
+                          },
+                          function(errobj) {
+                              alert("Game request failed: " + JSON.stringify(errobj, null, 2));
+                          });
+              }, function(errobj) {
+                $scope.gameRunning = true;
+                new Game("screen");
+                  // alert("Player request failed: " + JSON.stringify(errobj));
+              });
+          console.log("click");
+      };
 
         var Game = function(canvasId) { //holds all the main game code
             var canvas = document.getElementById(canvasId); //get the canvas into my game
