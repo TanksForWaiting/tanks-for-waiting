@@ -113,7 +113,9 @@ STATIC_URL = '/static/'
 
 STATIC_ROOT = 'staticfiles'
 
-CORS_ORIGIN_WHITELIST = (
-        'https://tanks-for-waiting.firebaseio.com',
-        'https://tanks-for-waiting.firebaseapp.com/',
-    )
+CORS_ORIGIN_ALLOW_ALL = True
+
+# CORS_ORIGIN_WHITELIST = (
+#         'https://tanks-for-waiting.firebaseio.com',
+#         'https://tanks-for-waiting.firebaseapp.com/',
+#     )
