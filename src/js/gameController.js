@@ -55,7 +55,7 @@
                 y: canvas.height
             }; // stores the width and height of the canvas for later use for placing entities on the canvas
 
-            this.bodies = [new Player(this, gameSize)]; //will hold all of the bodies in the game
+            this.tanks = [new Player(this, gameSize)]; //will hold all of the tanks in the game
             this.targets = [new Target(this, gameSize),
                 new Target(this, gameSize),
                 new Target(this, gameSize),
@@ -76,37 +76,44 @@
 
         Game.prototype = { //gives Game a prototype
             update: function() { //updates the movement of all the on screen entities
-                for (var i = 0; i < this.bodies.length; i++) {
-                    this.bodies[i].update();
+                for (var i = 0; i < this.tanks.length; i++) {
+                    this.tanks[i].update();
+                }
+                var thisPlayer = this.tanks[0];
+                for (i = 0; i < this.targets.length; i++) {
+                  if (colliding(thisPlayer, this.targets[i])) {
+                    console.log("HIT!");
+                    $scope.score += 1;
+                  }
                 }
             },
 
             draw: function(screen, gameSize) {
                 screen.clearRect(0, 0, gameSize.x, gameSize.y);
-                for (var i = 0; i < this.bodies.length; i++) {
-                    drawTank(screen, this.bodies[i]);
-                    // drawTarget(screen, this.bodies[i]);
+                for (var i = 0; i < this.tanks.length; i++) {
+                    drawTank(screen, this.tanks[i]);
+                    // drawTarget(screen, this.tanks[i]);
                     if (i === 0) {
-                        if (this.bodies[i].keyboarder.isDown(this.bodies[i].keyboarder.KEYS.LEFT)) {
-                            drawDrillHeadLeft(screen, this.bodies[i]);
-                        } else if (this.bodies[i].keyboarder.isDown(this.bodies[i].keyboarder.KEYS.RIGHT)) {
-                            drawDrillHeadRight(screen, this.bodies[i]);
-                        } else if (this.bodies[i].keyboarder.isDown(this.bodies[i].keyboarder.KEYS.UP)) {
-                            drawDrillHeadUp(screen, this.bodies[i]);
-                        } else if (this.bodies[i].keyboarder.isDown(this.bodies[i].keyboarder.KEYS.DOWN)) {
-                            drawDrillHeadDown(screen, this.bodies[i]);
+                        if (this.tanks[i].keyboarder.isDown(this.tanks[i].keyboarder.KEYS.LEFT)) {
+                            drawDrillHeadLeft(screen, this.tanks[i]);
+                        } else if (this.tanks[i].keyboarder.isDown(this.tanks[i].keyboarder.KEYS.RIGHT)) {
+                            drawDrillHeadRight(screen, this.tanks[i]);
+                        } else if (this.tanks[i].keyboarder.isDown(this.tanks[i].keyboarder.KEYS.UP)) {
+                            drawDrillHeadUp(screen, this.tanks[i]);
+                        } else if (this.tanks[i].keyboarder.isDown(this.tanks[i].keyboarder.KEYS.DOWN)) {
+                            drawDrillHeadDown(screen, this.tanks[i]);
                         }
                     }
                 }
                 for (i = 0; i < this.targets.length; i++) {
                     drawTarget(screen, this.targets[i]);
-                    // drawTarget(screen, this.bodies[i]);
+                    // drawTarget(screen, this.tanks[i]);
 
                 }
             },
 
-            addBody: function(body) { //takes a body and pushes it to the bodies array
-                this.bodies.push(body); // example; this.game.addBody(varNameOfBody);
+            addBody: function(body) { //takes a body and pushes it to the tanks array
+                this.tanks.push(body); // example; this.game.addBody(varNameOfBody);
             }
         };
         var Player = function(game, gameSize) {
@@ -224,6 +231,14 @@
                 DOWN: 40,
                 SPACE: 32
             };
+        };
+
+        var colliding = function(b1, b2) {
+          return !(b1 === b2 ||
+                   b1.center.x + b1.size.x /2 < b2.center.x - b2.size.x / 2 ||
+                   b1.center.y + b1.size.y /2 < b2.center.y - b2.size.y / 2 ||
+                   b1.center.x - b1.size.x /2 > b2.center.x + b2.size.x / 2 ||
+                   b1.center.y - b1.size.y /2 > b2.center.y + b2.size.y / 2);
         };
     }
 })(); // End of IIFE
