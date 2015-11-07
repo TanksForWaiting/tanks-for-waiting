@@ -1,53 +1,57 @@
 (function() { //IIFE
 
-  var DJANGO_SERVER_URL = "https://cryptic-citadel-5628.herokuapp.com/api";
-  var FIREBASE_SERVER_URL = "https://tanks-for-waiting.firebaseio.com";
+    var DJANGO_SERVER_URL = "https://cryptic-citadel-5628.herokuapp.com/api";
+    var FIREBASE_SERVER_URL = "https://tanks-for-waiting.firebaseio.com";
 
-  angular.module('tanks-for-waiting').controller('GameController', GameController);
-  GameController.$inject = ['$scope', '$http', '$interval', '$firebaseObject'];
+    angular.module('tanks-for-waiting').controller('GameController', GameController);
+    GameController.$inject = ['$scope', '$http', '$interval', '$firebaseObject'];
 
-  function GameController($scope, $http, $interval, $firebaseObject) {
+    function GameController($scope, $http, $interval, $firebaseObject) {
 
-      var firebaseref = null;
-      var playerID = null; //player_id stored here
-      var gameID = null; //game_id stored here
-      $scope.gameRunning = false;
-      $scope.score = 0;
-      /*
-      *This begins the process of game selection.
-      POST to /players/ for player_id
-      Returns player_id
-      Stores player_id
-      POST to games/player_id
-      Returns game_id
-      Stores game_id
-      Starts game
-      */
-      $scope.startGame = function() {
-          $http.post(DJANGO_SERVER_URL + "/players/")
-              .then(function(response) {
-                  playerID = response.data.player_id;
-                  //this is where I would display the tutorial
-                  $http.post(DJANGO_SERVER_URL + "/games/", {
-                    player_id : playerID
-                  })
-                      .then(function(response) {
-                              gameID = response.data.game_id;
-                              firebaseref = new Firebase (FIREBASE_SERVER_URL + "/games/" + gameID); //websocket to firebase api
-                              $scope.game = $firebaseObject (firebaseref); //websocket to firebase api
-                              $scope.gameRunning = true;
-                              new Game("screen");
-                          },
-                          function(errobj) {
-                              alert("Game request failed: " + JSON.stringify(errobj, null, 2));
-                          });
-              }, function(errobj) {
-                // $scope.gameRunning = true;
-                // new Game("screen");
-                  alert("Player request failed: " + JSON.stringify(errobj));
-              });
-          console.log("click");
-      };
+        var firebaseref = null;
+        var playerID = null; //player_id stored here
+        var gameID = null; //game_id stored here
+        $scope.gameRunning = false;
+        $scope.score = 0;
+        /*
+        *This begins the process of game selection.
+        POST to /players/ for player_id
+        Returns player_id
+        Stores player_id
+        POST to games/player_id
+        Returns game_id
+        Stores game_id
+        Starts game
+        */
+        $scope.startGame = function() {
+            $http.post(DJANGO_SERVER_URL + "/players/")
+                .then(function(response) {
+                    playerID = response.data.player_id;
+                    //this is where I would display the tutorial
+                    $http.post(DJANGO_SERVER_URL + "/games/", {
+                            player_id: playerID
+                        })
+                        .then(function(response) {
+                                gameID = response.data.game_id;
+                                firebaseref = new Firebase(FIREBASE_SERVER_URL + "/games/" + gameID); //websocket to firebase api
+                                var obj = $firebaseObject(firebaseref); //websocket to firebase api
+                                obj.$bindTo($scope, "game").then(function() {
+                                    console.log($scope.game); // { foo: "bar" }
+                                  
+                                });
+                                $scope.gameRunning = true;
+                                new Game("screen");
+                            },
+                            function(errobj) {
+                                alert("Game request failed: " + JSON.stringify(errobj, null, 2));
+                            });
+                }, function(errobj) {
+                    // $scope.gameRunning = true;
+                    // new Game("screen");
+                    alert("Player request failed: " + JSON.stringify(errobj));
+                });
+            console.log("click");
+        };
 
         var Game = function(canvasId) { //holds all the main game code
             var canvas = document.getElementById(canvasId); //get the canvas into my game
@@ -74,8 +78,8 @@
             //
             // framesPerSecond();
             $interval(function() {
-              self.update(); //updates the screen
-              self.draw(screen, gameSize); //based upon what's happening in the game
+                self.update(); //updates the screen
+                self.draw(screen, gameSize); //based upon what's happening in the game
             }, 16.7);
         };
 
@@ -86,11 +90,11 @@
                 }
                 var thisPlayer = this.tanks[0];
                 for (i = 0; i < this.targets.length; i++) {
-                  if (colliding(thisPlayer, this.targets[i])) {
-                    console.log("HIT!");
-                    $scope.score += 1;
-                    this.targets.splice(i, 1);
-                  }
+                    if (colliding(thisPlayer, this.targets[i])) {
+                        console.log("HIT!");
+                        $scope.score += 1;
+                        this.targets.splice(i, 1);
+                    }
                 }
             },
 
@@ -240,11 +244,11 @@
         };
 
         var colliding = function(b1, b2) {
-          return !(b1 === b2 ||
-                   b1.center.x + b1.size.x /2 < b2.center.x - b2.size.x / 2 ||
-                   b1.center.y + b1.size.y /2 < b2.center.y - b2.size.y / 2 ||
-                   b1.center.x - b1.size.x /2 > b2.center.x + b2.size.x / 2 ||
-                   b1.center.y - b1.size.y /2 > b2.center.y + b2.size.y / 2);
+            return !(b1 === b2 ||
+                b1.center.x + b1.size.x / 2 < b2.center.x - b2.size.x / 2 ||
+                b1.center.y + b1.size.y / 2 < b2.center.y - b2.size.y / 2 ||
+                b1.center.x - b1.size.x / 2 > b2.center.x + b2.size.x / 2 ||
+                b1.center.y - b1.size.y / 2 > b2.center.y + b2.size.y / 2);
         };
     }
 })(); // End of IIFE
