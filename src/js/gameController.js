@@ -26,9 +26,9 @@
         $scope.startGame = function() {
             $http.post(DJANGO_SERVER_URL + "/players/")
                 .then(function(response) {
-                    playerID = response.data;
+                    playerID = response.data.player_id;
                     //this is where I would display the tutorial
-                    $http.post(DJANGO_SERVER_URL + "/game/" + playerID)
+                    $http.post(DJANGO_SERVER_URL + "/games/" + playerID)
                         .then(function(response) {
                                 gameID = response.data;
                                 firebaseref = new Firebase (FIREBASE_SERVER_URL + "/games/" + gameID); //websocket to firebase api
@@ -37,7 +37,7 @@
                                 // new Game("screen");
                             },
                             function(errobj) {
-                                alert("Game request failed: " + JSON.stringify(errobj));
+                                alert("Game request failed: " + JSON.stringify(errobj, null, 2));
                             });
                 }, function(errobj) {
                   $scope.gameRunning = true;
