@@ -4,9 +4,9 @@
   var FIREBASE_SERVER_URL = "https://tanks-for-waiting.firebaseio.com";
 
   angular.module('tanks-for-waiting').controller('GameController', GameController);
-  GameController.$inject = ['$scope', '$http', '$firebaseObject'];
+  GameController.$inject = ['$scope', '$http', '$interval', '$firebaseObject'];
 
-  function GameController($scope, $http, $firebaseObject) {
+  function GameController($scope, $http, $interval, $firebaseObject) {
 
       var firebaseref = null;
       var playerID = null; //player_id stored here
@@ -28,21 +28,23 @@
               .then(function(response) {
                   playerID = response.data.player_id;
                   //this is where I would display the tutorial
-                  $http.post(DJANGO_SERVER_URL + "/games/" + playerID)
+                  $http.post(DJANGO_SERVER_URL + "/games/", {
+                    player_id : playerID
+                  })
                       .then(function(response) {
-                              gameID = response.data;
+                              gameID = response.data.game_id;
                               firebaseref = new Firebase (FIREBASE_SERVER_URL + "/games/" + gameID); //websocket to firebase api
-                              $scope.game = $firsebaseObject (firebaseref); //websocket to firebase api
-                              // $scope.gameRunning = true;
-                              // new Game("screen");
+                              $scope.game = $firebaseObject (firebaseref); //websocket to firebase api
+                              $scope.gameRunning = true;
+                              new Game("screen");
                           },
                           function(errobj) {
                               alert("Game request failed: " + JSON.stringify(errobj, null, 2));
                           });
               }, function(errobj) {
-                $scope.gameRunning = true;
-                new Game("screen");
-                  // alert("Player request failed: " + JSON.stringify(errobj));
+                // $scope.gameRunning = true;
+                // new Game("screen");
+                  alert("Player request failed: " + JSON.stringify(errobj));
               });
           console.log("click");
       };
