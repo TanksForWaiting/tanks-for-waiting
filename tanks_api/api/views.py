@@ -59,6 +59,13 @@ def put_tanks(sender, **kwargs):
     p = g.players.first()
     if len(g.players.all()) == 0:
         pass
+    elif len(g.players.all()) == 1:
+        requests.put('https://tanks-for-waiting.firebaseio.com/games/{}/tanks/{}/x.json'.format(g.game_id, p.player_id), data=str(p.x))
+        requests.put('https://tanks-for-waiting.firebaseio.com/games/{}/tanks/{}/y.json'.format(g.game_id, p.player_id), data=str(p.y))
+        requests.put('https://tanks-for-waiting.firebaseio.com/games/{}/tanks/{}/score.json'.format(g.game_id, p.player_id), data=str(p.score))
+        for _ in range(5):
+            t = Target(game=g)
+            t.save()
     else:
         requests.put('https://tanks-for-waiting.firebaseio.com/games/{}/tanks/{}/x.json'.format(g.game_id, p.player_id), data=str(p.x))
         requests.put('https://tanks-for-waiting.firebaseio.com/games/{}/tanks/{}/y.json'.format(g.game_id, p.player_id), data=str(p.y))
