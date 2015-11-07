@@ -51,24 +51,24 @@ class TargetViewSet(viewsets.ModelViewSet):
         context = super().get_serializer_context().copy()
         context['game'] = get_object_or_404(Game, game_id=self.kwargs['games_pk'])
         return context
-    
 
-# @receiver(post_save, sender=Game)
-# def put_tanks(sender, **kwargs):
-#     g = kwargs['instance']
-#     p = g.players.first()
-#     if len(g.players.all()) == 0:
-#         pass
-#     else:
-#         requests.put('https://tanks-for-waiting.firebaseio.com/games/{}/tanks/{}/x.json'.format(g.game_id, p.player_id), data=str(p.x))
-#         requests.put('https://tanks-for-waiting.firebaseio.com/games/{}/tanks/{}/y.json'.format(g.game_id, p.player_id), data=str(p.y))
 
-# @receiver(post_save, sender=Target)
-# def put_targets(sender, **kwargs):
-#     t = kwargs['instance']
-#     g = t.game
-#     if t.game != None:
-#         requests.put('https://tanks-for-waiting.firebaseio.com/games/{}/targets/{}/x.json'.format(g.game_id, t.target_id), data=str(t.x))
-#         requests.put('https://tanks-for-waiting.firebaseio.com/games/{}/targets/{}/y.json'.format(g.game_id, t.target_id), data=str(t.y))
-#     else:
-#         pass
+@receiver(post_save, sender=Game)
+def put_tanks(sender, **kwargs):
+    g = kwargs['instance']
+    p = g.players.first()
+    if len(g.players.all()) == 0:
+        pass
+    else:
+        requests.put('https://tanks-for-waiting.firebaseio.com/games/{}/tanks/{}/x.json'.format(g.game_id, p.player_id), data=str(p.x))
+        requests.put('https://tanks-for-waiting.firebaseio.com/games/{}/tanks/{}/y.json'.format(g.game_id, p.player_id), data=str(p.y))
+
+@receiver(post_save, sender=Target)
+def put_targets(sender, **kwargs):
+    t = kwargs['instance']
+    g = t.game
+    if t.game != None:
+        requests.put('https://tanks-for-waiting.firebaseio.com/games/{}/targets/{}/x.json'.format(g.game_id, t.target_id), data=str(t.x))
+        requests.put('https://tanks-for-waiting.firebaseio.com/games/{}/targets/{}/y.json'.format(g.game_id, t.target_id), data=str(t.y))
+    else:
+        pass
