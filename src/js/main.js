@@ -184,10 +184,10 @@
     //     new Game("screen"); //pass in the id of the canvas I want to write into
     // };
 
-    $('#button').click(function() {
-      $('#button').addClass('hide-me');
-      $('#screen').removeClass('hide-me');
-    });
+    // $('#button').click(function() {
+    //   $('#button').addClass('hide-me');
+    //   $('#screen').removeClass('hide-me');
+    // });
 
     angular.module('tanks-for-waiting', [ ]);
     // .run(function($http, $rootScope){
