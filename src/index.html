@@ -24,7 +24,7 @@
         <div class="container" ng-app="tanks-for-waiting" ng-controller="GameController">
           <p>Player Score:{{score}}</p>
           <button ng-click="startGame()" ng-hide="gameRunning">Click to Start Driving your Tank!</button>
-          <canvas id="screen" class="hide-me" width="500" height="500" style="border:1px solid #000000;">
+          <canvas id="screen" ng-show="gameRunning" width="500" height="500" style="border:1px solid #000000;">
         </div>
 
         <script src="../bower_components/jquery/dist/jquery.js"></script>
