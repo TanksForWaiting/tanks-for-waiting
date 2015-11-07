@@ -189,7 +189,7 @@
     //   $('#screen').removeClass('hide-me');
     // });
 
-    angular.module('tanks-for-waiting', [ ]);
+    angular.module('tanks-for-waiting', ["firebase"]);
     // .run(function($http, $rootScope){
     //
     //

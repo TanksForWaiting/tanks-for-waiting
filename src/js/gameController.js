@@ -1,12 +1,14 @@
 (function() { //IIFE
 
     var DJANGO_SERVER_URL = "abc";
-    var FIREBASE_SERVER_URL = "http://tanks-for-waiting.firebaseio.com";
+    var FIREBASE_SERVER_URL = "https://tanks-for-waiting.firebaseio.com";
 
     angular.module('tanks-for-waiting').controller('GameController', GameController);
-    GameController.$inject = ['$scope', '$http'];
+    GameController.$inject = ['$scope', '$http', '$firebaseObject'];
 
-    function GameController($scope, $http) {
+    function GameController($scope, $http, $firebaseObject) {
+
+        var firebaseref = null;
         var playerID = null; //player_id stored here
         var gameID = null; //game_id stored here
         $scope.gameRunning = false;
@@ -29,6 +31,8 @@
                     $http.post(DJANGO_SERVER_URL + "/game/" + playerID)
                         .then(function(response) {
                                 gameID = response.data;
+                                firebaseref = new Firebase (FIREBASE_SERVER_URL + "/games/" + gameID); //websocket to firebase api
+                                $scope.game = $firsebaseObject (firebaseref); //websocket to firebase api
                                 // $scope.gameRunning = true;
                                 // new Game("screen");
                             },
