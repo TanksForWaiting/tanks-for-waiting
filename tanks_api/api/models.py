@@ -1,6 +1,7 @@
 from django.db import models
 import uuid
 import random
+import requests
 
 # Create your models here.
 
@@ -22,6 +23,10 @@ class Player(models.Model):
     y = models.PositiveSmallIntegerField(default=24)
     game = models.ForeignKey(Game, null=True, related_name='players')
 
+    def add_point(self):
+        self.score += 1
+        self.save()
+        requests.put('https://tanks-for-waiting.firebaseio.com/games/{}/tanks/{}/score.json'.format(self.game.game_id, self.player_id), data=str(self.score))
 
     def __str__(self):
         return str(self.player_id)
