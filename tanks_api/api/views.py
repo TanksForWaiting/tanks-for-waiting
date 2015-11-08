@@ -75,7 +75,7 @@ class TargetViewSet(viewsets.ModelViewSet):
         except:
             game = get_object_or_404(Game, game_id=self.kwargs['games_pk'])
             target = self.get_object()
-            self.perform_destoy(target)
+            self.perform_destroy(target)
             t = Target(game=game)
             t.save()
             return Response("Target Destroyed By Non-Player")
