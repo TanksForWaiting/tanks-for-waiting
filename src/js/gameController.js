@@ -33,6 +33,7 @@
                         })
                         .then(function(response) {
                                 // gameID = response.data.game_id;
+                                playerID = "b5f21d45-5837-4286-8d2a-5eb7b9986b21";
                                 gameID = "aed394ec-84d1-4c01-b3b2-d243c2901953";
                                 firebaseref = new Firebase(FIREBASE_SERVER_URL + "/games/" + gameID); //websocket to firebase api
                                 var obj = $firebaseObject(firebaseref); //websocket to firebase api
@@ -61,9 +62,15 @@
                 y: canvas.height
             }; // stores the width and height of the canvas for later use for placing entities on the canvas
 
-            this.tanks = [new Player(this, gameSize)]; //will hold all of the tanks in the game
+            this.tanks = [new Player (this, $scope.game.tanks[playerID])]; //will hold all of the tanks in the game
+
+            for (var key in $scope.game.tanks) {
+              if (key !== playerID) {
+                this.tanks.push(new Player(this, $scope.game.tanks[key]));
+              }
+            }
             this.targets = [];
-            for (var key in $scope.game.targets) {
+            for (key in $scope.game.targets) {
               this.targets.push(new Target(this, $scope.game.targets[key]));
             }
             var self = this;
@@ -124,15 +131,15 @@
             //     this.tanks.push(body); // example; this.game.addBody(varNameOfBody);
             // }
         };
-        var Player = function(game, gameSize) {
+        var Player = function(game, location) {
             this.game = game;
             this.size = {
                 x: 16,
                 y: 16
             }; //player size
             this.center = {
-                x: gameSize.x / 2,
-                y: gameSize.y - this.size.x
+                x: location.x,
+                y: location.y
             }; //tells the game where the player is at the moment, starting at half way through the screen and just above the bottom
             this.keyboarder = new Keyboarder();
         };
