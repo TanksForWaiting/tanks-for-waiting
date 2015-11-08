@@ -58,19 +58,27 @@ class TargetViewSet(viewsets.ModelViewSet):
         return context
 
     def destroy(self, request, *args, **kwargs):
-        player = get_object_or_404(Player, player_id=self.request.data['player_id'])
-        game = get_object_or_404(Game, game_id=self.kwargs['games_pk'])
-        target = self.get_object()
-        r = requests.get("https://tanks-for-waiting.firebaseio.com/games/{}/tanks/{}.json".format(game.game_id, player.player_id))
-        if abs(r.json()['x'] - target.x) < 30 and abs(r.json()['y'] - target.y) < 30:
-            player.add_point()
-            requests.delete("https://tanks-for-waiting.firebaseio.com/games/{}/targets/{}.json".format(game.game_id, target.target_id))
-            self.perform_destroy(target)
-            t = Target(game=g)
+        try player = get_object_or_404(Player, player_id=self.request.data['player_id']):
+            game = get_object_or_404(Game, game_id=self.kwargs['games_pk'])
+            target = self.get_object()
+            r = requests.get("https://tanks-for-waiting.firebaseio.com/games/{}/tanks/{}.json".format(game.game_id, player.player_id))
+            if abs(r.json()['x'] - target.x) < 30 and abs(r.json()['y'] - target.y) < 30:
+                player.add_point()
+                requests.delete("https://tanks-for-waiting.firebaseio.com/games/{}/targets/{}.json".format(game.game_id, target.target_id))
+                self.perform_destroy(target)
+                t = Target(game=game)
+                t.save()
+                return Response("Target Destroyed!")
+            else:
+                return Response("nope")
+        except:
+            game = get_object_or_404(Game, game_id=self.kwargs['games_pk'])
+            target = self.get_object()
+            self.perform_destoy(target)
+            t = Target(game=game)
             t.save()
-            return Response(player.score)
-        else:
-            return Response("nope")
+            return Response("Target Destroyed By Non-Player")
+
 
 @receiver(post_save, sender=Game)
 def put_tanks(sender, **kwargs):
