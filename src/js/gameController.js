@@ -4,9 +4,9 @@
     var FIREBASE_SERVER_URL = "https://tanks-for-waiting.firebaseio.com";
 
     angular.module('tanks-for-waiting').controller('GameController', GameController);
-    GameController.$inject = ['$scope', '$http', '$firebaseObject', '$interval'];
+    GameController.$inject = ['$scope', '$http', '$interval', '$firebaseObject'];
 
-    function GameController($scope, $http, $firebaseObject, $interval) {
+    function GameController($scope, $http, $interval, $firebaseObject) {
 
         var firebaseref = null;
         var playerID = null; //player_id stored here
@@ -26,23 +26,30 @@
         $scope.startGame = function() {
             $http.post(DJANGO_SERVER_URL + "/players/")
                 .then(function(response) {
-                    playerID = response.data;
+                    playerID = response.data.player_id;
                     //this is where I would display the tutorial
-                    $http.post(DJANGO_SERVER_URL + "/game/" + playerID)
+                    $http.post(DJANGO_SERVER_URL + "/games/", {
+                            player_id: playerID
+                        })
                         .then(function(response) {
-                                gameID = response.data;
-                                firebaseref = new Firebase (FIREBASE_SERVER_URL + "/games/" + gameID); //websocket to firebase api
-                                $scope.game = $firsebaseObject (firebaseref); //websocket to firebase api
-                                // $scope.gameRunning = true;
-                                // new Game("screen");
+                                // gameID = response.data.game_id;
+                                playerID = "b5f21d45-5837-4286-8d2a-5eb7b9986b21";
+                                gameID = "aed394ec-84d1-4c01-b3b2-d243c2901953";
+                                firebaseref = new Firebase(FIREBASE_SERVER_URL + "/games/" + gameID); //websocket to firebase api
+                                var obj = $firebaseObject(firebaseref); //websocket to firebase api
+                                obj.$bindTo($scope, "game").then(function() {
+                                    console.log($scope.game); // { foo: "bar" }
+                                    $scope.gameRunning = true;
+                                    new Game("screen");
+                                });
                             },
                             function(errobj) {
-                                alert("Game request failed: " + JSON.stringify(errobj));
+                                alert("Game request failed: " + JSON.stringify(errobj, null, 2));
                             });
                 }, function(errobj) {
-                  $scope.gameRunning = true;
-                  new Game("screen");
-                    // alert("Player request failed: " + JSON.stringify(errobj));
+                    // $scope.gameRunning = true;
+                    // new Game("screen");
+                    alert("Player request failed: " + JSON.stringify(errobj));
                 });
             console.log("click");
         };
@@ -55,13 +62,17 @@
                 y: canvas.height
             }; // stores the width and height of the canvas for later use for placing entities on the canvas
 
-            this.tanks = [new Player(this, gameSize)]; //will hold all of the tanks in the game
-            this.targets = [new Target(this, gameSize),
-                new Target(this, gameSize),
-                new Target(this, gameSize),
-                new Target(this, gameSize),
-                new Target(this, gameSize)
-            ];
+            this.tanks = [new Player (this, $scope.game.tanks[playerID])]; //will hold all of the tanks in the game
+
+            for (var key in $scope.game.tanks) {
+              if (key !== playerID) {
+                this.tanks.push(new Player(this, $scope.game.tanks[key]));
+              }
+            }
+            this.targets = [];
+            for (key in $scope.game.targets) {
+              this.targets.push(new Target(this, $scope.game.targets[key]));
+            }
             var self = this;
             // var framesPerSecond = function() { // framesPerSecond is going to get run about 60 times a second and it's responsible for running all the main game logic
             //     self.update(); //updates the screen
@@ -72,8 +83,8 @@
             //
             // framesPerSecond();
             $interval(function() {
-              self.update(); //updates the screen
-              self.draw(screen, gameSize); //based upon what's happening in the game
+                self.update(); //updates the screen
+                self.draw(screen, gameSize); //based upon what's happening in the game
             }, 16.7);
         };
 
@@ -84,11 +95,11 @@
                 }
                 var thisPlayer = this.tanks[0];
                 for (i = 0; i < this.targets.length; i++) {
-                  if (colliding(thisPlayer, this.targets[i])) {
-                    console.log("HIT!");
-                    $scope.score += 1;
-                    this.targets.splice(i, 1);
-                  }
+                    if (colliding(thisPlayer, this.targets[i])) {
+                        console.log("HIT!");
+                        $scope.score += 1;
+                        this.targets.splice(i, 1);
+                    }
                 }
             },
 
@@ -116,19 +127,19 @@
                 }
             },
 
-            addBody: function(body) { //takes a body and pushes it to the tanks array
-                this.tanks.push(body); // example; this.game.addBody(varNameOfBody);
-            }
+            // addBody: function(body) { //takes a body and pushes it to the tanks array
+            //     this.tanks.push(body); // example; this.game.addBody(varNameOfBody);
+            // }
         };
-        var Player = function(game, gameSize) {
+        var Player = function(game, location) {
             this.game = game;
             this.size = {
                 x: 16,
                 y: 16
             }; //player size
             this.center = {
-                x: gameSize.x / 2,
-                y: gameSize.y - this.size.x
+                x: location.x,
+                y: location.y
             }; //tells the game where the player is at the moment, starting at half way through the screen and just above the bottom
             this.keyboarder = new Keyboarder();
         };
@@ -166,16 +177,16 @@
             }
         };
 
-        var Target = function(game, gameSize) {
+        var Target = function(game, location) {
             this.game = game;
             this.size = {
                 x: 10,
                 y: 10
             }; //player size
             this.center = {
-                x: Math.random() * gameSize.x,
-                y: Math.random() * gameSize.y
-            }; //tells the game where the player is at the moment, starting at half way through the screen and just above the bottom
+                x: location.x,
+                y: location.y
+            }; //tells the game where the targets are at the moment, starting at half way through the screen and just above the bottom
         };
 
         Target.prototype = {
@@ -238,11 +249,11 @@
         };
 
         var colliding = function(b1, b2) {
-          return !(b1 === b2 ||
-                   b1.center.x + b1.size.x /2 < b2.center.x - b2.size.x / 2 ||
-                   b1.center.y + b1.size.y /2 < b2.center.y - b2.size.y / 2 ||
-                   b1.center.x - b1.size.x /2 > b2.center.x + b2.size.x / 2 ||
-                   b1.center.y - b1.size.y /2 > b2.center.y + b2.size.y / 2);
+            return !(b1 === b2 ||
+                b1.center.x + b1.size.x / 2 < b2.center.x - b2.size.x / 2 ||
+                b1.center.y + b1.size.y / 2 < b2.center.y - b2.size.y / 2 ||
+                b1.center.x - b1.size.x / 2 > b2.center.x + b2.size.x / 2 ||
+                b1.center.y - b1.size.y / 2 > b2.center.y + b2.size.y / 2);
         };
     }
 })(); // End of IIFE
