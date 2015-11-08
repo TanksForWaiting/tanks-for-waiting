@@ -75,6 +75,7 @@ class TargetViewSet(viewsets.ModelViewSet):
         except:
             game = get_object_or_404(Game, game_id=self.kwargs['games_pk'])
             target = self.get_object()
+            requests.delete("https://tanks-for-waiting.firebaseio.com/games/{}/targets/{}.json".format(game.game_id, target.target_id))
             self.perform_destroy(target)
             t = Target(game=game)
             t.save()
