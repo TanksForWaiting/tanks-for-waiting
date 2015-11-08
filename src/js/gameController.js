@@ -32,9 +32,9 @@
                             player_id: playerID
                         })
                         .then(function(response) {
-                                // gameID = response.data.game_id;
-                                playerID = "b5f21d45-5837-4286-8d2a-5eb7b9986b21";
-                                gameID = "aed394ec-84d1-4c01-b3b2-d243c2901953";
+                                gameID = response.data.game_id;
+                                // playerID = "b5f21d45-5837-4286-8d2a-5eb7b9986b21";
+                                // gameID = "aed394ec-84d1-4c01-b3b2-d243c2901953";
                                 firebaseref = new Firebase(FIREBASE_SERVER_URL + "/games/" + gameID); //websocket to firebase api
                                 var obj = $firebaseObject(firebaseref); //websocket to firebase api
                                 obj.$bindTo($scope, "game").then(function() {
@@ -93,7 +93,7 @@
                 for (var i = 0; i < this.tanks.length; i++) {
                     this.tanks[i].update();
                 }
-                var thisPlayer = this.tanks[0];
+                var thisPlayer = this.tanks[0]; 
                 for (i = 0; i < this.targets.length; i++) {
                     if (colliding(thisPlayer, this.targets[i])) {
                         console.log("HIT!");
@@ -126,10 +126,6 @@
 
                 }
             },
-
-            // addBody: function(body) { //takes a body and pushes it to the tanks array
-            //     this.tanks.push(body); // example; this.game.addBody(varNameOfBody);
-            // }
         };
         var Player = function(game, location) {
             this.game = game;
@@ -140,7 +136,7 @@
             this.center = {
                 x: location.x,
                 y: location.y
-            }; //tells the game where the player is at the moment, starting at half way through the screen and just above the bottom
+            }; //tells the game where the player is at the start
             this.keyboarder = new Keyboarder();
         };
 
