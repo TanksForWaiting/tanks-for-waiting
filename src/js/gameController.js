@@ -32,15 +32,15 @@
                             player_id: playerID
                         })
                         .then(function(response) {
-                                gameID = response.data.game_id;
+                                // gameID = response.data.game_id;
+                                gameID = "aed394ec-84d1-4c01-b3b2-d243c2901953";
                                 firebaseref = new Firebase(FIREBASE_SERVER_URL + "/games/" + gameID); //websocket to firebase api
                                 var obj = $firebaseObject(firebaseref); //websocket to firebase api
                                 obj.$bindTo($scope, "game").then(function() {
                                     console.log($scope.game); // { foo: "bar" }
-                                  
+                                    $scope.gameRunning = true;
+                                    new Game("screen");
                                 });
-                                $scope.gameRunning = true;
-                                new Game("screen");
                             },
                             function(errobj) {
                                 alert("Game request failed: " + JSON.stringify(errobj, null, 2));
@@ -62,12 +62,10 @@
             }; // stores the width and height of the canvas for later use for placing entities on the canvas
 
             this.tanks = [new Player(this, gameSize)]; //will hold all of the tanks in the game
-            this.targets = [new Target(this, gameSize),
-                new Target(this, gameSize),
-                new Target(this, gameSize),
-                new Target(this, gameSize),
-                new Target(this, gameSize)
-            ];
+            this.targets = [];
+            for (var key in $scope.game.targets) {
+              this.targets.push(new Target(this, $scope.game.targets[key]));
+            }
             var self = this;
             // var framesPerSecond = function() { // framesPerSecond is going to get run about 60 times a second and it's responsible for running all the main game logic
             //     self.update(); //updates the screen
@@ -122,9 +120,9 @@
                 }
             },
 
-            addBody: function(body) { //takes a body and pushes it to the tanks array
-                this.tanks.push(body); // example; this.game.addBody(varNameOfBody);
-            }
+            // addBody: function(body) { //takes a body and pushes it to the tanks array
+            //     this.tanks.push(body); // example; this.game.addBody(varNameOfBody);
+            // }
         };
         var Player = function(game, gameSize) {
             this.game = game;
@@ -172,16 +170,16 @@
             }
         };
 
-        var Target = function(game, gameSize) {
+        var Target = function(game, location) {
             this.game = game;
             this.size = {
                 x: 10,
                 y: 10
             }; //player size
             this.center = {
-                x: Math.random() * gameSize.x,
-                y: Math.random() * gameSize.y
-            }; //tells the game where the player is at the moment, starting at half way through the screen and just above the bottom
+                x: location.x,
+                y: location.y
+            }; //tells the game where the targets are at the moment, starting at half way through the screen and just above the bottom
         };
 
         Target.prototype = {
