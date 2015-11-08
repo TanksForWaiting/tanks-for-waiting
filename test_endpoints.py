@@ -52,3 +52,7 @@ def test_player_destroy_target():
     requests.put('https://tanks-for-waiting.firebaseio.com/games/{}/tanks/{}/x.json'.format(g.json()['game_id'],player_id), data=str(target['x']))
     requests.put('https://tanks-for-waiting.firebaseio.com/games/{}/tanks/{}/y.json'.format(g.json()['game_id'],player_id), data=str(target['y']))
     d = requests.delete('http://localhost:8000/api/games/{}/targets/{}/'.format(g.json()['game_id'], target_id), data={"player_id":player_id})
+    n = requests.get('https://tanks-for-waiting.firebaseio.com/games/{}.json'.format(g.json()['game_id']))
+    assert target_id not in n.json()['targets'].keys()
+    assert d.status_code == 200
+    assert len(n.json()['targets'].keys()) == 5
