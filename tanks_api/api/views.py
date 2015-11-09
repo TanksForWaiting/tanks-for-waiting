@@ -25,7 +25,9 @@ class GameViewSet(viewsets.GenericViewSet,
     def get_serializer(self, *args, **kwargs):
         """
         Return the serializer instance that should be used for validating and
-        deserializing input, and for serializing output.
+        deserializing input, and for serializing output.  In this case we are
+        getting the player_id out of the included payload so we can put them into
+        a game.
         """
         try:
             player_id = kwargs['data']['player_id']
@@ -50,14 +52,21 @@ class TargetViewSet(viewsets.ModelViewSet):
     serializer_class = TargetSerializer
 
     def get_queryset(self):
+        '''When you GET targets only shows targets for the game you care about'''
         return self.queryset.filter(game_id=self.kwargs['games_pk'])
 
     def get_serializer_context(self):
+        '''Gets the game_id out of the url'''
         context = super().get_serializer_context().copy()
         context['game'] = get_object_or_404(Game, game_id=self.kwargs['games_pk'])
         return context
 
     def destroy(self, request, *args, **kwargs):
+        '''Destroys the target both locally and in firebaseio
+        Tries to find a player_id in the payload, if it doesn't it assumes
+        that the target was hit by a non-player (spawned in a wall)
+        If it finds a player and that player's location in firebase is near enough
+        the target in the local database that player gets a point.'''
         try:
             player = get_object_or_404(Player, player_id=self.request.data['player_id'])
             game = get_object_or_404(Game, game_id=self.kwargs['games_pk'])
@@ -84,6 +93,9 @@ class TargetViewSet(viewsets.ModelViewSet):
 
 @receiver(post_save, sender=Game)
 def put_tanks(sender, **kwargs):
+    '''After saving a game if it has players it creates the game in firebase.
+    It ensures all of the targets in the game locally are in firebase and then
+    creates more until there are 5.  It also puts each player into firebase.'''
     g = kwargs['instance']
     if len(g.players.all()) == 0:
         pass
@@ -104,6 +116,8 @@ def put_tanks(sender, **kwargs):
 
 @receiver(post_save, sender=Target)
 def put_targets(sender, **kwargs):
+    '''Whever a target is saved locally if it has a game assigned it is put
+    into firebase'''
     t = kwargs['instance']
     g = t.game
     if t.game != None:
