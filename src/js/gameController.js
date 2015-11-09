@@ -33,8 +33,6 @@
                         })
                         .then(function(response) {
                                 gameID = response.data.game_id;
-                                // playerID = "b5f21d45-5837-4286-8d2a-5eb7b9986b21";
-                                // gameID = "aed394ec-84d1-4c01-b3b2-d243c2901953";
                                 firebaseref = new Firebase(FIREBASE_SERVER_URL + "/games/" + gameID); //websocket to firebase api
                                 var obj = $firebaseObject(firebaseref); //websocket to firebase api
                                 obj.$bindTo($scope, "game").then(function() {
@@ -62,45 +60,57 @@
                 y: canvas.height
             }; // stores the width and height of the canvas for later use for placing entities on the canvas
 
-            this.tanks = [new Player (this, $scope.game.tanks[playerID])]; //will hold all of the tanks in the game
-
-            for (var key in $scope.game.tanks) {
-              if (key !== playerID) {
-                this.tanks.push(new Player(this, $scope.game.tanks[key]));
-              }
-            }
-            this.targets = [];
-            for (key in $scope.game.targets) {
-              this.targets.push(new Target(this, $scope.game.targets[key]));
-            }
             var self = this;
-            // var framesPerSecond = function() { // framesPerSecond is going to get run about 60 times a second and it's responsible for running all the main game logic
-            //     self.update(); //updates the screen
-            //     self.draw(screen, gameSize); //based upon what's happening in the game
-            //     requestAnimationFrame(framesPerSecond); // and then asks to run framesPerSecond again
-            //     // console.log("hello"); // uncomment the console log to see this 60fps in action
-            // };
-            //
-            // framesPerSecond();
+
+            this.tanks = [new Player(this, $scope.game.tanks[playerID])]; //will hold all of the tanks in the game
+            this.tanks.concat(self.refreshTanks(this));
+            this.targets = self.refreshTargets(this);
+
             $interval(function() {
+              if (self.isReady) {
                 self.update(); //updates the screen
                 self.draw(screen, gameSize); //based upon what's happening in the game
+              }
             }, 16.7);
         };
 
         Game.prototype = { //gives Game a prototype
+
+            isReady: true,
+
             update: function() { //updates the movement of all the on screen entities
                 for (var i = 0; i < this.tanks.length; i++) {
                     this.tanks[i].update();
                 }
-                var thisPlayer = this.tanks[0]; 
+
+                var thisPlayer = this.tanks[0];
+
                 for (i = 0; i < this.targets.length; i++) {
                     if (colliding(thisPlayer, this.targets[i])) {
+                        this.isReady = false;
+                        $scope.game.tanks[playerID].x = thisPlayer.location().x;
+                        $scope.game.tanks[playerID].y = thisPlayer.location().y;
                         console.log("HIT!");
-                        $scope.score += 1;
-                        this.targets.splice(i, 1);
+
+                        postDjango(targetHit).then(function(response) {
+                          if (response.nope) {
+                            // Did not hit target.
+
+                          } else {
+                            // Was a hit.
+                            // Update score from $scope.game.tanks[playID];
+                          }
+                          this.isReady = true;
+                        }, function(errobj) {
+                          // Post failed!
+                        });
+
+                        // $scope.score += 1;
+                        // this.targets.splice(i, 1);
                     }
                 }
+                this.tanks = this.tanks.slice(0,1).concat(this.refreshTanks(this));
+                this.targets = this.refreshTargets(this);
             },
 
             draw: function(screen, gameSize) {
@@ -126,6 +136,24 @@
 
                 }
             },
+
+            refreshTanks: function(thisGame) {
+              var tanks = [];
+                for (var key in $scope.game.tanks) {
+                    if (key !== playerID) {
+                        tanks.push(new Player(this, $scope.game.tanks[key]));
+                    }
+                }
+                return tanks;
+            },
+
+            refreshTargets: function(thisGame) {
+                var targets = [];
+                for (var key in $scope.game.targets) {
+                    targets.push(new Target(thisGame, $scope.game.targets[key]));
+                }
+                return targets;
+            }
         };
         var Player = function(game, location) {
             this.game = game;
@@ -141,6 +169,11 @@
         };
 
         Player.prototype = {
+
+            location: function() {
+              return this.center;
+            },
+
             update: function() {
                 if (this.keyboarder.isDown(this.keyboarder.KEYS.LEFT)) {
                     if (this.center.x <= 10) {
