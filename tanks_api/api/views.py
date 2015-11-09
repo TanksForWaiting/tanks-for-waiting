@@ -69,9 +69,13 @@ class TargetViewSet(viewsets.ModelViewSet):
                 self.perform_destroy(target)
                 t = Target(game=game)
                 t.save()
+                game.save()
                 return Response("Target Destroyed!")
             else:
-                return Response("nope")
+                self.perform_destroy(target)
+                t = Target(game=game)
+                t.save()
+                return Response("Target Destroyed By Non-Player")
         except:
             game = get_object_or_404(Game, game_id=self.kwargs['games_pk'])
             target = self.get_object()
