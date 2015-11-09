@@ -106,5 +106,6 @@ def put_targets(sender, **kwargs):
     if t.game != None:
         requests.put('https://tanks-for-waiting.firebaseio.com/games/{}/targets/{}/x.json'.format(g.game_id, t.target_id), data=str(t.x))
         requests.put('https://tanks-for-waiting.firebaseio.com/games/{}/targets/{}/y.json'.format(g.game_id, t.target_id), data=str(t.y))
+        requests.put('https://tanks-for-waiting.firebaseio.com/games/{}/targets/{}/is_hit.json'.format(g.game_id, t.target_id), data=str(0))
     else:
         pass
