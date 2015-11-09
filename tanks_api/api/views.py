@@ -59,7 +59,7 @@ class TargetViewSet(viewsets.ModelViewSet):
 
     def destroy(self, request, *args, **kwargs):
         try:
-            player = get_object_or_404(Player, player_id=self.request.params['player_id'])
+            player = get_object_or_404(Player, player_id=self.request.data['player_id'])
             game = get_object_or_404(Game, game_id=self.kwargs['games_pk'])
             target = self.get_object()
             r = requests.get("https://tanks-for-waiting.firebaseio.com/games/{}/tanks/{}.json".format(game.game_id, player.player_id))
