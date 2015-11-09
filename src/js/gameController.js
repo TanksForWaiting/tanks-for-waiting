@@ -92,11 +92,16 @@
                         $scope.game.tanks[playerID].y = thisPlayer.location().y;
                         console.log("HIT!");
 
-                        postDjango(targetHit).then(function(response) {
+                        $http.delete(DJANGO_SERVER_URL + "/games/game_id/targets/target_id", {
+                                player_id: playerID
+                            })
+                          .then(function(response) {
                           if (response.nope) {
                             // Did not hit target.
-
+                            //if no, return something (currently it returns the string “nope” but that can be changed)
                           } else {
+                            //if yes, delete the target, both locally and in firebase
+                            //if yes, add a point to the player both locally and in firebase
                             // Was a hit.
                             // Update score from $scope.game.tanks[playID];
                           }
