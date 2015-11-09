@@ -92,12 +92,14 @@
                         $scope.game.tanks[playerID].y = thisPlayer.location().y;
                         console.log(this.targets[i].target_id);
                         if ($scope.game.targets[this.targets[i].target_id].is_hit === 0) {
-                            console.log("HIT!");
+                            // console.log("HIT!");
+                            console.log(playerID);
                             $scope.game.targets[this.targets[i].target_id].is_hit = 1;
                             $http.delete(DJANGO_SERVER_URL + "/games/" + gameID + "/targets/" + this.targets[i].target_id + "/", {
                                     player_id: playerID
                                 })
                                 .then(function(response) {
+                                  console.log(response);
                                     if (response.nope) {
                                         // Did not hit target.
                                         //if no, return something (currently it returns the string “nope” but that can be changed)
