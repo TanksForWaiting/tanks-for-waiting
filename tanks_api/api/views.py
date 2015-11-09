@@ -94,9 +94,13 @@ def put_tanks(sender, **kwargs):
             requests.put('https://tanks-for-waiting.firebaseio.com/games/{}/tanks/{}/y.json'.format(g.game_id, p.player_id), data=str(p.y * count))
             requests.put('https://tanks-for-waiting.firebaseio.com/games/{}/tanks/{}/score.json'.format(g.game_id, p.player_id), data=str(p.score))
             count += 2
+        for t in g.targets.all():
+            requests.put('https://tanks-for-waiting.firebaseio.com/games/{}/targets/{}/x.json'.format(g.game_id, t.target_id), data=str(t.x))
+            requests.put('https://tanks-for-waiting.firebaseio.com/games/{}/targets/{}/y.json'.format(g.game_id, t.target_id), data=str(t.y))
         while len(g.targets.all()) < 5:
             t = Target(game=g)
             t.save()
+
 
 @receiver(post_save, sender=Target)
 def put_targets(sender, **kwargs):
