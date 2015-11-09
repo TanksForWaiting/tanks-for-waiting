@@ -67,10 +67,10 @@
             this.targets = self.refreshTargets(this);
 
             $interval(function() {
-              if (self.isReady) {
-                self.update(); //updates the screen
-                self.draw(screen, gameSize); //based upon what's happening in the game
-              }
+                if (self.isReady) {
+                    self.update(); //updates the screen
+                    self.draw(screen, gameSize); //based upon what's happening in the game
+                }
             }, 16.7);
         };
 
@@ -87,34 +87,34 @@
 
                 for (i = 0; i < this.targets.length; i++) {
                     if (colliding(thisPlayer, this.targets[i])) {
-                        this.isReady = false;
+                        // this.isReady = false;
                         $scope.game.tanks[playerID].x = thisPlayer.location().x;
                         $scope.game.tanks[playerID].y = thisPlayer.location().y;
-                        console.log("HIT!");
+                        console.log(this.targets[i].target_id);
+                        if ($scope.game.targets[this.targets[i].target_id].is_hit === 0) {
+                            console.log("HIT!");
+                            $scope.game.targets[this.targets[i].target_id].is_hit = 1;
+                            $http.delete(DJANGO_SERVER_URL + "/games/" + gameID + "/targets/" + this.targets[i].target_id + "/", {
+                                    player_id: playerID
+                                })
+                                .then(function(response) {
+                                    if (response.nope) {
+                                        // Did not hit target.
+                                        //if no, return something (currently it returns the string “nope” but that can be changed)
+                                    } else {
+                                        // Was a hit.
+                                        // Update score from $scope.game.tanks[playID];
+                                    }
 
-                        $http.delete(DJANGO_SERVER_URL + "/games/game_id/targets/target_id", {
-                                player_id: playerID
-                            })
-                          .then(function(response) {
-                          if (response.nope) {
-                            // Did not hit target.
-                            //if no, return something (currently it returns the string “nope” but that can be changed)
-                          } else {
-                            //if yes, delete the target, both locally and in firebase
-                            //if yes, add a point to the player both locally and in firebase
-                            // Was a hit.
-                            // Update score from $scope.game.tanks[playID];
-                          }
-                          this.isReady = true;
-                        }, function(errobj) {
-                          // Post failed!
-                        });
+                                });
 
+                        }
+                        // this.isReady = true;
                         // $scope.score += 1;
                         // this.targets.splice(i, 1);
                     }
                 }
-                this.tanks = this.tanks.slice(0,1).concat(this.refreshTanks(this));
+                this.tanks = this.tanks.slice(0, 1).concat(this.refreshTanks(this));
                 this.targets = this.refreshTargets(this);
             },
 
@@ -143,7 +143,7 @@
             },
 
             refreshTanks: function(thisGame) {
-              var tanks = [];
+                var tanks = [];
                 for (var key in $scope.game.tanks) {
                     if (key !== playerID) {
                         tanks.push(new Player(this, $scope.game.tanks[key]));
@@ -155,7 +155,7 @@
             refreshTargets: function(thisGame) {
                 var targets = [];
                 for (var key in $scope.game.targets) {
-                    targets.push(new Target(thisGame, $scope.game.targets[key]));
+                    targets.push(new Target(thisGame, $scope.game.targets[key], key));
                 }
                 return targets;
             }
@@ -176,7 +176,7 @@
         Player.prototype = {
 
             location: function() {
-              return this.center;
+                return this.center;
             },
 
             update: function() {
@@ -211,7 +211,7 @@
             }
         };
 
-        var Target = function(game, location) {
+        var Target = function(game, location, target_id) {
             this.game = game;
             this.size = {
                 x: 10,
@@ -221,6 +221,8 @@
                 x: location.x,
                 y: location.y
             }; //tells the game where the targets are at the moment, starting at half way through the screen and just above the bottom
+            this.target_id = target_id;
+            this.is_hit = 0;
         };
 
         Target.prototype = {
