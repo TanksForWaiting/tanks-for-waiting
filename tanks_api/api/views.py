@@ -73,6 +73,7 @@ class TargetViewSet(viewsets.ModelViewSet):
                 return Response("Target Destroyed!")
             else:
                 self.perform_destroy(target)
+                requests.delete("https://tanks-for-waiting.firebaseio.com/games/{}/targets/{}.json".format(game.game_id, target.target_id))
                 t = Target(game=game)
                 t.save()
                 return Response("Target Destroyed By Non-Player")
