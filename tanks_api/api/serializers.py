@@ -42,12 +42,12 @@ class GameSerializer(serializers.ModelSerializer):
         '''Puts players into exisiting games before making new games.
         When you post a game with a payload of a player this looks at all
         the games in the database, finds those with between 1-3 players
-        and puts the new player into a game with the most possible players.
+        and puts the new player into a game with the fewest possible players.
         If it fails to find such a game it creates a new one for the player'''
         try:
             anno = Game.objects.annotate(num_players=Count('players'))
             over = anno.filter(num_players__gte=1)
-            game = anno.filter(num_players__lte=3).order_by('-num_players')[0]
+            game = anno.filter(num_players__lte=3).order_by('num_players')[0]
             game.players.add(self.context['player'])
             game.save()
             return game

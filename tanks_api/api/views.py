@@ -101,7 +101,7 @@ def put_tanks(sender, **kwargs):
         pass
     else:
         player = 1
-        for p in g.players.all():
+        for p in g.players.all(): #Puts players into starting locations.
             if player == 1:
                 requests.put('https://tanks-for-waiting.firebaseio.com/games/{}/tanks/{}/x.json'.format(g.game_id, p.player_id), data=str(20))
                 requests.put('https://tanks-for-waiting.firebaseio.com/games/{}/tanks/{}/y.json'.format(g.game_id, p.player_id), data=str(20))
