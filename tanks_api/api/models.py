@@ -28,7 +28,7 @@ class Player(models.Model):
         put to the firebase database.'''
         self.score += 1
         self.save()
-        requests.put('https://tanks-for-waiting.firebaseio.com/games/{}/tanks/{}/score.json'.format(self.game.game_id, self.player_id), data=str(self.score))
+        requests.put('https://tanks-for-waiting.firebaseio.com/games/{}/scores/{}/score.json'.format(self.game.game_id, self.player_id), data=str(self.score))
 
     def __str__(self):
         return str(self.player_id)

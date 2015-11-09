@@ -100,12 +100,26 @@ def put_tanks(sender, **kwargs):
     if len(g.players.all()) == 0:
         pass
     else:
-        count = 1
+        player = 1
         for p in g.players.all():
-            requests.put('https://tanks-for-waiting.firebaseio.com/games/{}/tanks/{}/x.json'.format(g.game_id, p.player_id), data=str(p.x * count))
-            requests.put('https://tanks-for-waiting.firebaseio.com/games/{}/tanks/{}/y.json'.format(g.game_id, p.player_id), data=str(p.y * count))
-            requests.put('https://tanks-for-waiting.firebaseio.com/games/{}/tanks/{}/score.json'.format(g.game_id, p.player_id), data=str(p.score))
-            count += 2
+            if player == 1:
+                requests.put('https://tanks-for-waiting.firebaseio.com/games/{}/tanks/{}/x.json'.format(g.game_id, p.player_id), data=str(20))
+                requests.put('https://tanks-for-waiting.firebaseio.com/games/{}/tanks/{}/y.json'.format(g.game_id, p.player_id), data=str(20))
+                requests.put('https://tanks-for-waiting.firebaseio.com/games/{}/tanks/{}/dir.json'.format(g.game_id, p.player_id), data=str(1))
+            elif player == 2:
+                requests.put('https://tanks-for-waiting.firebaseio.com/games/{}/tanks/{}/x.json'.format(g.game_id, p.player_id), data=str(480))
+                requests.put('https://tanks-for-waiting.firebaseio.com/games/{}/tanks/{}/y.json'.format(g.game_id, p.player_id), data=str(480))
+                requests.put('https://tanks-for-waiting.firebaseio.com/games/{}/tanks/{}/dir.json'.format(g.game_id, p.player_id), data=str(2))
+            elif player == 3:
+                requests.put('https://tanks-for-waiting.firebaseio.com/games/{}/tanks/{}/x.json'.format(g.game_id, p.player_id), data=str(480))
+                requests.put('https://tanks-for-waiting.firebaseio.com/games/{}/tanks/{}/y.json'.format(g.game_id, p.player_id), data=str(20))
+                requests.put('https://tanks-for-waiting.firebaseio.com/games/{}/tanks/{}/dir.json'.format(g.game_id, p.player_id), data=str(2))
+            else:
+                requests.put('https://tanks-for-waiting.firebaseio.com/games/{}/tanks/{}/x.json'.format(g.game_id, p.player_id), data=str(20))
+                requests.put('https://tanks-for-waiting.firebaseio.com/games/{}/tanks/{}/y.json'.format(g.game_id, p.player_id), data=str(480))
+                requests.put('https://tanks-for-waiting.firebaseio.com/games/{}/tanks/{}/dir.json'.format(g.game_id, p.player_id), data=str(1))
+            requests.put('https://tanks-for-waiting.firebaseio.com/games/{}/scores/{}/score.json'.format(g.game_id, p.player_id), data=str(p.score))
+            player += 1
         for t in g.targets.all():
             requests.put('https://tanks-for-waiting.firebaseio.com/games/{}/targets/{}/x.json'.format(g.game_id, t.target_id), data=str(t.x))
             requests.put('https://tanks-for-waiting.firebaseio.com/games/{}/targets/{}/y.json'.format(g.game_id, t.target_id), data=str(t.y))
