@@ -70,13 +70,13 @@ class TargetViewSet(viewsets.ModelViewSet):
                 t = Target(game=game)
                 t.save()
                 game.save()
-                return Response("Target Destroyed!")
+                return Response("Player")
             else:
                 requests.delete("https://tanks-for-waiting.firebaseio.com/games/{}/targets/{}.json".format(game.game_id, target.target_id))
                 self.perform_destroy(target)
                 t = Target(game=game)
                 t.save()
-                return Response("Target Destroyed By Non-Player")
+                return Response("Else")
         except:
             game = get_object_or_404(Game, game_id=self.kwargs['games_pk'])
             target = self.get_object()
@@ -84,7 +84,7 @@ class TargetViewSet(viewsets.ModelViewSet):
             self.perform_destroy(target)
             t = Target(game=game)
             t.save()
-            return Response("Target Destroyed By Non-Player")
+            return Response("Except")
 
 
 @receiver(post_save, sender=Game)
