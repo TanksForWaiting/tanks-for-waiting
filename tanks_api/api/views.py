@@ -85,7 +85,6 @@ class TargetViewSet(viewsets.ModelViewSet):
 @receiver(post_save, sender=Game)
 def put_tanks(sender, **kwargs):
     g = kwargs['instance']
-    p = g.players.first()
     if len(g.players.all()) == 0:
         pass
     else:

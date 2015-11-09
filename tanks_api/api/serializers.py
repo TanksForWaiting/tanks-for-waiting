@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from django.db.models import Count
 from .models import Player, Game, Target
 import requests
 
@@ -36,6 +37,14 @@ class GameSerializer(serializers.ModelSerializer):
         fields = ('game_id', 'players')
 
     def create(self, validated_data):
+        # try:
+        #     anno = Game.objects.annotate(num_players=Count('players'))
+        #     over = anno.filter(num_players__gte=1)
+        #     game = anno.filter(num_players__lte=3).order_by('-num_players')[0]
+        #     game.players.add(self.context['player'])
+        #     game.save()
+        #     return game
+        # except:
         g = Game()
         g.save()
         g.players.add(self.context['player'])

@@ -17,8 +17,8 @@ def test_post_game():
     assert r.status_code == 200
     assert len(p.json()['player_id']) == 36
     assert len(g.json()['game_id']) == 36
-    assert g.json()['players'][0] == player_id
-    assert len(r.json()['tanks']) == 1
+    assert player_id in g.json()['players'] 
+    assert len(r.json()['tanks']) >= 1
     assert len(r.json()['targets']) == 5
 
 
