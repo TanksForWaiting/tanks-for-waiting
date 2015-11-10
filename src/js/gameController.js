@@ -65,6 +65,20 @@
             this.tanks = [new Player(this, $scope.game.tanks[playerID])]; //will hold all of the tanks in the game
             this.tanks.concat(self.refreshTanks(this));
             this.targets = self.refreshTargets(this);
+            this.walls = [new Wall(this, {
+                x: 40,
+                y: 40
+            }, {
+                x: 80,
+                y: 460
+            }),
+            new Wall(this, {
+                x: 150,
+                y: 40
+            }, {
+                x: 222,
+                y: 60
+            })];
 
             $interval(function() {
                 if (self.isReady) {
@@ -111,7 +125,9 @@
                             console.log(playerID);
                             $scope.game.targets[this.targets[i].target_id].is_hit = 1;
                             $http.delete(DJANGO_SERVER_URL + "/games/" + gameID + "/targets/" + this.targets[i].target_id + "/", {
-                                data:{player_id: playerID}
+                                data: {
+                                    player_id: playerID
+                                }
                             }).then(deleteSuccess, deleteError);
 
                         }
@@ -126,9 +142,8 @@
 
             draw: function(screen, gameSize) {
                 screen.clearRect(0, 0, gameSize.x, gameSize.y);
-                for (var i = 0; i < this.tanks.length; i++) {
+                for (var i = 0; i < this.tanks.length; i++) { //This loop draws the tanks
                     drawTank(screen, this.tanks[i]);
-                    // drawTarget(screen, this.tanks[i]);
                     if (i === 0) {
                         if (this.tanks[i].keyboarder.isDown(this.tanks[i].keyboarder.KEYS.LEFT)) {
                             drawDrillHeadLeft(screen, this.tanks[i]);
@@ -141,10 +156,11 @@
                         }
                     }
                 }
-                for (i = 0; i < this.targets.length; i++) {
+                for (i = 0; i < this.targets.length; i++) { //This loop draws the targets
                     drawTarget(screen, this.targets[i]);
-                    // drawTarget(screen, this.tanks[i]);
-
+                }
+                for (i = 0; i < this.walls.length; i++) { //This loop draws the walls
+                    this.walls[i].draw(screen);
                 }
             },
 
@@ -234,6 +250,20 @@
         Target.prototype = {
             update: function() {
                 console.log("helllo");
+            }
+        };
+
+        var Wall = function(game, topLeft, bottomRight) {
+            this.game = game;
+            this.topLeft = topLeft;
+            this.bottomRight = bottomRight;
+        };
+
+        Wall.prototype = {
+            draw: function(screen) {
+                screen.fillRect(this.topLeft.x, //x coordinate
+                    this.topLeft.y, // y coordinate
+                    this.bottomRight.x - this.topLeft.x, this.bottomRight.y - this.topLeft.y);
             }
         };
 
