@@ -65,20 +65,20 @@
             this.tanks = [new Player(this, $scope.game.tanks[playerID])]; //will hold all of the tanks in the game
             this.tanks.concat(self.refreshTanks(this));
             this.targets = self.refreshTargets(this);
-            this.walls = [new Wall(this, {
-                x: 40,
-                y: 40
-            }, {
-                x: 80,
-                y: 460
-            }),
-            new Wall(this, {
-                x: 150,
-                y: 40
-            }, {
-                x: 222,
-                y: 60
-            })];
+            // this.walls = [new Wall(this, {
+            //     x: 40,
+            //     y: 40
+            // }, {
+            //     x: 80,
+            //     y: 460
+            // }),
+            // new Wall(this, {
+            //     x: 150,
+            //     y: 40
+            // }, {
+            //     x: 222,
+            //     y: 60
+            // })];
 
             $interval(function() {
                 if (self.isReady) {
@@ -125,9 +125,9 @@
                             console.log(playerID);
                             $scope.game.targets[this.targets[i].target_id].is_hit = 1;
                             $http.delete(DJANGO_SERVER_URL + "/games/" + gameID + "/targets/" + this.targets[i].target_id + "/", {
-                                data: {
-                                    player_id: playerID
-                                }
+
+                                data: playerID
+
                             }).then(deleteSuccess, deleteError);
 
                         }
