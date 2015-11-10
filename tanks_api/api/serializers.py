@@ -1,6 +1,7 @@
 from rest_framework import serializers
-from django.db.models import Count
+# from django.db.models import Count
 from .models import Player, Game, Target
+from django.db import transaction
 
 class TargetSerializer(serializers.ModelSerializer):
     x = serializers.IntegerField(read_only=True, min_value=0)
@@ -15,9 +16,8 @@ class TargetSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         '''When you post to targets it makes a target in the game it pulls out
         of the url.'''
-        t = Target(game=self.context['game'])
-        t.save()
-        return t
+        target = Target.objects.create(game=self.context['game'])
+        return target
 
 
 
@@ -37,6 +37,7 @@ class GameSerializer(serializers.ModelSerializer):
         model = Game
         fields = ('game_id', 'players')
 
+    @transaction.atomic
     def create(self, validated_data):
         '''Puts players into exisiting games before making new games.
         When you post a game with a payload of a player this looks at all
@@ -51,8 +52,10 @@ class GameSerializer(serializers.ModelSerializer):
         #     game.save()
         #     return game
         # except:
-        g = Game()
-        g.save()
-        g.players.add(self.context['player'])
-        g.save()
-        return g
+        game = Game.objects.create()
+        game.players.add(self.context['player'])
+        game.save()
+        self.context['player'].put()
+        for _ in range(5 - len(game.targets.all())):
+            Target.objects.create(game=game)
+        return game
