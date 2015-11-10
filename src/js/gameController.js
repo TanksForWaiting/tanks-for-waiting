@@ -125,7 +125,9 @@
                             console.log(playerID);
                             $scope.game.targets[this.targets[i].target_id].is_hit = 1;
                             $http.delete(DJANGO_SERVER_URL + "/games/" + gameID + "/targets/" + this.targets[i].target_id + "/", {
+
                                 data: playerID
+
                             }).then(deleteSuccess, deleteError);
 
                         }
