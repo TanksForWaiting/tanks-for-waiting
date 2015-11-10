@@ -99,7 +99,6 @@
                         // Update score from $scope.game.tanks[playID];
                     }
                 };
-
                 $scope.game.tanks[playerID].x = thisPlayer.location().x;
                 $scope.game.tanks[playerID].y = thisPlayer.location().y;
 
@@ -112,7 +111,7 @@
                             console.log(playerID);
                             $scope.game.targets[this.targets[i].target_id].is_hit = 1;
                             $http.delete(DJANGO_SERVER_URL + "/games/" + gameID + "/targets/" + this.targets[i].target_id + "/", {
-                                'player_id': playerID
+                                data:{player_id: playerID}
                             }).then(deleteSuccess, deleteError);
 
                         }
