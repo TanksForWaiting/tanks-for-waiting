@@ -65,20 +65,27 @@
             this.tanks = [new Player(this, $scope.game.tanks[playerID])]; //will hold all of the tanks in the game
             this.tanks.concat(self.refreshTanks(this));
             this.targets = self.refreshTargets(this);
-            // this.walls = [new Wall(this, {
-            //     x: 40,
-            //     y: 40
-            // }, {
-            //     x: 80,
-            //     y: 460
-            // }),
-            // new Wall(this, {
-            //     x: 150,
-            //     y: 40
-            // }, {
-            //     x: 222,
-            //     y: 60
-            // })];
+            this.walls = [new Wall(this, {
+                x: 40,
+                y: 40
+            }, {
+                x: 45,
+                y: 460
+            }),
+            new Wall(this, {
+                x: 40,
+                y: 40
+            }, {
+                x: 225,
+                y: 45
+            }),
+            new Wall(this, {
+                x: 45,
+                y: 460
+            }, {
+                x: 225,
+                y: 455,
+            })];
 
             $interval(function() {
                 if (self.isReady) {
@@ -160,9 +167,9 @@
                 for (i = 0; i < this.targets.length; i++) { //This loop draws the targets
                     drawTarget(screen, this.targets[i]);
                 }
-                // for (i = 0; i < this.walls.length; i++) { //This loop draws the walls
-                //     this.walls[i].draw(screen);
-                // }
+                for (i = 0; i < this.walls.length; i++) { //This loop draws the walls
+                    this.walls[i].draw(screen);
+                }
             },
 
             refreshTanks: function(thisGame) {
@@ -206,6 +213,7 @@
             update: function() {
                 if (this.keyboarder.isDown(this.keyboarder.KEYS.LEFT)) {
                     this.direction = "W";
+
                     if (this.center.x <= 10) {
                         this.center.x = 8;
                     } else {
@@ -334,4 +342,5 @@
                 b1.center.y - b1.size.y / 2 > b2.center.y + b2.size.y / 2);
         };
     }
+
 })(); // End of IIFE
