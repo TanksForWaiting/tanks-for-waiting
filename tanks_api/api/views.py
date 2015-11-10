@@ -6,6 +6,8 @@ from .models import Game, Player, Target
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 import requests
+import json
+import re
 from rest_framework import status
 from rest_framework.response import Response
 # from rest_framework.decorators import api_view
@@ -59,32 +61,30 @@ class TargetViewSet(viewsets.ModelViewSet):
 
     def destroy(self, request, *args, **kwargs):
         try:
-            player = get_object_or_404(Player, player_id=self.request.data['player_id'])
-            game = get_object_or_404(Game, game_id=self.kwargs['games_pk'])
-            target = self.get_object()
-            r = requests.get("https://tanks-for-waiting.firebaseio.com/games/{}/tanks/{}.json".format(game.game_id, player.player_id))
-            if abs(r.json()['x'] - target.x) < 30 and abs(r.json()['y'] - target.y) < 30:
-                player.add_point()
-                requests.delete("https://tanks-for-waiting.firebaseio.com/games/{}/targets/{}.json".format(game.game_id, target.target_id))
-                self.perform_destroy(target)
-                t = Target(game=game)
-                t.save()
-                game.save()
-                return Response("Player")
-            else:
-                requests.delete("https://tanks-for-waiting.firebaseio.com/games/{}/targets/{}.json".format(game.game_id, target.target_id))
-                self.perform_destroy(target)
-                t = Target(game=game)
-                t.save()
-                return Response("Else")
+            body_unicode = self.request.body.decode('utf-8')
+            body_unicode = re.sub(r'{', '{"',body_unicode)
+            body = re.sub(r':', '":', body_unicode)
+            body = json.loads(body)
+            player = get_object_or_404(Player, player_id=body["player_id"])
         except:
-            game = get_object_or_404(Game, game_id=self.kwargs['games_pk'])
-            target = self.get_object()
+            return Response(status=403)
+        game = get_object_or_404(Game, game_id=self.kwargs['games_pk'])
+        target = self.get_object()
+        r = requests.get("https://tanks-for-waiting.firebaseio.com/games/{}/tanks/{}.json".format(game.game_id, player.player_id))
+        if abs(r.json()['x'] - target.x) < 30 and abs(r.json()['y'] - target.y) < 30:
+            player.add_point()
             requests.delete("https://tanks-for-waiting.firebaseio.com/games/{}/targets/{}.json".format(game.game_id, target.target_id))
             self.perform_destroy(target)
             t = Target(game=game)
             t.save()
-            return Response("Except")
+            game.save()
+            return Response("Player")
+        else:
+            requests.delete("https://tanks-for-waiting.firebaseio.com/games/{}/targets/{}.json".format(game.game_id, target.target_id))
+            self.perform_destroy(target)
+            t = Target(game=game)
+            t.save()
+            return Response("Else")
 
 
 @receiver(post_save, sender=Game)
