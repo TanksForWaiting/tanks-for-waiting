@@ -77,7 +77,8 @@ class TargetViewSet(viewsets.ModelViewSet):
         if abs(current_location['x'] - target.x) < 100 and abs(current_location['y'] - target.y) < 100:
             player.add_point()
             self.perform_destroy(target)
-            delete(firebase_url + "/games/{}/targets/{}.json".format(game.game_id, target_id))
+            request = delete(firebase_url + "/games/{}/targets/{}.json".format(game.game_id, target_id))
+            put(firebase_url + "/games/{}/logs/{}.json".format(game.game_id, target_id), data=str(request.status_code))
             new_target = Target.objects.create(game=game)
             new_target.put()
             return Response("Player")
