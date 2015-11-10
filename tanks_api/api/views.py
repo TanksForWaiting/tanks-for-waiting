@@ -62,8 +62,7 @@ class TargetViewSet(viewsets.ModelViewSet):
 
     def destroy(self, request, *args, **kwargs):
         try:
-            body_unicode = request.body.decode('utf-8')
-            body = json.loads(body_unicode)
+            body = str(request.body.decode('utf-8'))
             player = get_object_or_404(Player, player_id=body)
         except:
             return Response(status=403)
