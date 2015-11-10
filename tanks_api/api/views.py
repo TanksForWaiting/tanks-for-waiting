@@ -10,6 +10,7 @@ import json
 import re
 from rest_framework import status
 from rest_framework.response import Response
+from rest_framework.parsers import JSONParser
 # from rest_framework.decorators import api_view
 
 # Create your views here.
@@ -61,9 +62,9 @@ class TargetViewSet(viewsets.ModelViewSet):
 
     def destroy(self, request, *args, **kwargs):
         try:
-            body_unicode = self.request.body.decode('utf-8')
-            body = json.loads(body)
-            player = get_object_or_404(Player, player_id=body["player_id"])
+            data = JSONParser().parse(request)
+            data = data['player_id']
+            player = get_player_or_404(Player, player_id=data)
         except:
             return Response(status=403)
         game = get_object_or_404(Game, game_id=self.kwargs['games_pk'])
