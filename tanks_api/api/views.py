@@ -6,13 +6,16 @@ from .models import Game, Player, Target
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 import requests
+import json
+import re
 from rest_framework import status
 from rest_framework.response import Response
+from rest_framework.parsers import JSONParser
 # from rest_framework.decorators import api_view
 
 # Create your views here.
-
-
+firebase_url = "https://tanks-for-waiting.firebaseio.com"
+put, delete = requests.put, requests.delete
 class GameViewSet(viewsets.GenericViewSet,
                                 CreateModelMixin,
                                 ListModelMixin,
@@ -59,27 +62,27 @@ class TargetViewSet(viewsets.ModelViewSet):
 
     def destroy(self, request, *args, **kwargs):
         try:
-            player = get_object_or_404(Player, player_id=self.request.data['player_id'])
-            game = get_object_or_404(Game, game_id=self.kwargs['games_pk'])
-            target = self.get_object()
-            r = requests.get("https://tanks-for-waiting.firebaseio.com/games/{}/tanks/{}.json".format(game.game_id, player.player_id))
-            if abs(r.json()['x'] - target.x) < 30 and abs(r.json()['y'] - target.y) < 30:
-                player.add_point()
-                requests.delete("https://tanks-for-waiting.firebaseio.com/games/{}/targets/{}.json".format(game.game_id, target.target_id))
-                self.perform_destroy(target)
-                t = Target(game=game)
-                t.save()
-                return Response("Target Destroyed!")
-            else:
-                return Response("nope")
+            body = str(request.body.decode('utf-8'))
+            player = get_object_or_404(Player, player_id=body)
         except:
-            game = get_object_or_404(Game, game_id=self.kwargs['games_pk'])
-            target = self.get_object()
-            requests.delete("https://tanks-for-waiting.firebaseio.com/games/{}/targets/{}.json".format(game.game_id, target.target_id))
+            return Response(status=403)
+        game = get_object_or_404(Game, game_id=self.kwargs['games_pk'])
+        target = self.get_object()
+        current_location = requests.get(firebase_url + "/games/{}/tanks/{}.json".format(game.game_id, player.player_id)).json()
+        if abs(current_location['x'] - target.x) < 100 and abs(current_location['y'] - target.y) < 100:
+            player.add_point()
+            delete(firebase_url + "/games/{}/targets/{}.json".format(game.game_id, target.target_id))
             self.perform_destroy(target)
-            t = Target(game=game)
-            t.save()
-            return Response("Target Destroyed By Non-Player")
+            new_target = Target(game=game)
+            new_target.save()
+            game.save()
+            return Response("Player")
+        else:
+            delete(firebase_url +"/games/{}/targets/{}.json".format(game.game_id, target.target_id))
+            self.perform_destroy(target)
+            new_target = Target(game=game)
+            new_target.save()
+            return Response("Else")
 
 
 @receiver(post_save, sender=Game)
@@ -91,9 +94,9 @@ def put_tanks(sender, **kwargs):
     else:
         count = 1
         for p in g.players.all():
-            requests.put('https://tanks-for-waiting.firebaseio.com/games/{}/tanks/{}/x.json'.format(g.game_id, p.player_id), data=str(p.x * count))
-            requests.put('https://tanks-for-waiting.firebaseio.com/games/{}/tanks/{}/y.json'.format(g.game_id, p.player_id), data=str(p.y * count))
-            requests.put('https://tanks-for-waiting.firebaseio.com/games/{}/tanks/{}/score.json'.format(g.game_id, p.player_id), data=str(p.score))
+            put(firebase_url + '/games/{}/tanks/{}/x.json'.format(g.game_id, p.player_id), data=str(p.x * count))
+            put(firebase_url + '/games/{}/tanks/{}/y.json'.format(g.game_id, p.player_id), data=str(p.y * count))
+            put(firebase_url + '/games/{}/tanks/{}/score.json'.format(g.game_id, p.player_id), data=str(p.score))
             count += 2
         while len(g.targets.all()) < 5:
             t = Target(game=g)
@@ -104,7 +107,8 @@ def put_targets(sender, **kwargs):
     t = kwargs['instance']
     g = t.game
     if t.game != None:
-        requests.put('https://tanks-for-waiting.firebaseio.com/games/{}/targets/{}/x.json'.format(g.game_id, t.target_id), data=str(t.x))
-        requests.put('https://tanks-for-waiting.firebaseio.com/games/{}/targets/{}/y.json'.format(g.game_id, t.target_id), data=str(t.y))
+        put(firebase_url + '/games/{}/targets/{}/x.json'.format(g.game_id, t.target_id), data=str(t.x))
+        put(firebase_url + '/games/{}/targets/{}/y.json'.format(g.game_id, t.target_id), data=str(t.y))
+        put(firebase_url + '/games/{}/targets/{}/is_hit.json'.format(g.game_id, t.target_id), data=str(0))
     else:
         pass
