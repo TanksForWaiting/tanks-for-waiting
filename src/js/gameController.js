@@ -115,6 +115,7 @@
                 };
                 $scope.game.tanks[playerID].x = thisPlayer.location().x;
                 $scope.game.tanks[playerID].y = thisPlayer.location().y;
+                $scope.game.tanks[playerID].direction= thisPlayer.direction;
 
                 for (i = 0; i < this.targets.length; i++) {
                     if (colliding(thisPlayer, this.targets[i])) {
@@ -145,13 +146,13 @@
                 for (var i = 0; i < this.tanks.length; i++) { //This loop draws the tanks
                     drawTank(screen, this.tanks[i]);
                     if (i === 0) {
-                        if (this.tanks[i].keyboarder.isDown(this.tanks[i].keyboarder.KEYS.LEFT)) {
+                        if (this.tanks[i].direction === "W") {
                             drawDrillHeadLeft(screen, this.tanks[i]);
-                        } else if (this.tanks[i].keyboarder.isDown(this.tanks[i].keyboarder.KEYS.RIGHT)) {
+                        } else if (this.tanks[i].direction === "E") {
                             drawDrillHeadRight(screen, this.tanks[i]);
-                        } else if (this.tanks[i].keyboarder.isDown(this.tanks[i].keyboarder.KEYS.UP)) {
+                        } else if (this.tanks[i].direction === "N") {
                             drawDrillHeadUp(screen, this.tanks[i]);
-                        } else if (this.tanks[i].keyboarder.isDown(this.tanks[i].keyboarder.KEYS.DOWN)) {
+                        } else if (this.tanks[i].direction === "S") {
                             drawDrillHeadDown(screen, this.tanks[i]);
                         }
                     }
@@ -159,9 +160,9 @@
                 for (i = 0; i < this.targets.length; i++) { //This loop draws the targets
                     drawTarget(screen, this.targets[i]);
                 }
-                for (i = 0; i < this.walls.length; i++) { //This loop draws the walls
-                    this.walls[i].draw(screen);
-                }
+                // for (i = 0; i < this.walls.length; i++) { //This loop draws the walls
+                //     this.walls[i].draw(screen);
+                // }
             },
 
             refreshTanks: function(thisGame) {
@@ -184,6 +185,7 @@
         };
         var Player = function(game, location) {
             this.game = game;
+            this.direction = "E";
             this.size = {
                 x: 16,
                 y: 16
@@ -203,27 +205,31 @@
 
             update: function() {
                 if (this.keyboarder.isDown(this.keyboarder.KEYS.LEFT)) {
+                    this.direction = "W";
                     if (this.center.x <= 10) {
                         this.center.x = 8;
                     } else {
                         this.center.x -= 2;
                     }
                 }
-                if (this.keyboarder.isDown(this.keyboarder.KEYS.RIGHT)) {
+                else if (this.keyboarder.isDown(this.keyboarder.KEYS.RIGHT)) {
+                    this.direction = "E";
                     if (this.center.x >= 490) {
                         this.center.x = 492;
                     } else {
                         this.center.x += 2;
                     }
                 }
-                if (this.keyboarder.isDown(this.keyboarder.KEYS.UP)) {
+                else if (this.keyboarder.isDown(this.keyboarder.KEYS.UP)) {
+                    this.direction = "N";
                     if (this.center.y <= 10) {
                         this.center.y = 8;
                     } else {
                         this.center.y -= 2;
                     }
                 }
-                if (this.keyboarder.isDown(this.keyboarder.KEYS.DOWN)) {
+                else if (this.keyboarder.isDown(this.keyboarder.KEYS.DOWN)) {
+                    this.direction = "S";
                     if (this.center.y >= 490) {
                         this.center.y = 492;
                     } else {
