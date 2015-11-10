@@ -85,30 +85,35 @@
 
                 var thisPlayer = this.tanks[0];
 
+                var deleteError = function(errobj) {
+                    console.log('Error deleting target: ' + JSON.stringify(errobj));
+                };
+
+                var deleteSuccess = function(response) {
+                    console.log(response);
+                    if (response.nope) {
+                        // Did not hit target.
+                        //if no, return something (currently it returns the string “nope” but that can be changed)
+                    } else {
+                        // Was a hit.
+                        // Update score from $scope.game.tanks[playID];
+                    }
+                };
+
+                $scope.game.tanks[playerID].x = thisPlayer.location().x;
+                $scope.game.tanks[playerID].y = thisPlayer.location().y;
+
                 for (i = 0; i < this.targets.length; i++) {
                     if (colliding(thisPlayer, this.targets[i])) {
                         // this.isReady = false;
-                        $scope.game.tanks[playerID].x = thisPlayer.location().x;
-                        $scope.game.tanks[playerID].y = thisPlayer.location().y;
                         console.log(this.targets[i].target_id);
                         if ($scope.game.targets[this.targets[i].target_id].is_hit === 0) {
                             // console.log("HIT!");
                             console.log(playerID);
                             $scope.game.targets[this.targets[i].target_id].is_hit = 1;
                             $http.delete(DJANGO_SERVER_URL + "/games/" + gameID + "/targets/" + this.targets[i].target_id + "/", {
-                                    player_id: playerID
-                                })
-                                .then(function(response) {
-                                  console.log(response);
-                                    if (response.nope) {
-                                        // Did not hit target.
-                                        //if no, return something (currently it returns the string “nope” but that can be changed)
-                                    } else {
-                                        // Was a hit.
-                                        // Update score from $scope.game.tanks[playID];
-                                    }
-
-                                });
+                                'player_id': playerID
+                            }).then(deleteSuccess, deleteError);
 
                         }
                         // this.isReady = true;
