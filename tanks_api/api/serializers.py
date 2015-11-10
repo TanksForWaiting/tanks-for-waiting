@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from django.db.models import Count
 from .models import Player, Game, Target
 import requests
 
@@ -13,6 +14,8 @@ class TargetSerializer(serializers.ModelSerializer):
         fields = ('x', 'y', 'game', 'target_id')
 
     def create(self, validated_data):
+        '''When you post to targets it makes a target in the game it pulls out
+        of the url.'''
         t = Target(game=self.context['game'])
         t.save()
         return t
@@ -36,8 +39,21 @@ class GameSerializer(serializers.ModelSerializer):
         fields = ('game_id', 'players')
 
     def create(self, validated_data):
-        g = Game()
-        g.save()
-        g.players.add(self.context['player'])
-        g.save()
-        return g
+        '''Puts players into exisiting games before making new games.
+        When you post a game with a payload of a player this looks at all
+        the games in the database, finds those with between 1-3 players
+        and puts the new player into a game with the fewest possible players.
+        If it fails to find such a game it creates a new one for the player'''
+        try:
+            anno = Game.objects.annotate(num_players=Count('players'))
+            over = anno.filter(num_players__gte=1)
+            game = anno.filter(num_players__lte=3).order_by('num_players')[0]
+            game.players.add(self.context['player'])
+            game.save()
+            return game
+        except:
+            g = Game()
+            g.save()
+            g.players.add(self.context['player'])
+            g.save()
+            return g
