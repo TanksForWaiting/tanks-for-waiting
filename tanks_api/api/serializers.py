@@ -57,5 +57,6 @@ class GameSerializer(serializers.ModelSerializer):
         game.save()
         self.context['player'].put()
         for _ in range(5 - len(game.targets.all())):
-            Target.objects.create(game=game)
+            x = Target.objects.create(game=game)
+            x.put()
         return game

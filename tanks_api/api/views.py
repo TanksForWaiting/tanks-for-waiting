@@ -4,8 +4,8 @@ from rest_framework import viewsets
 from rest_framework.mixins import CreateModelMixin, ListModelMixin, RetrieveModelMixin
 from .serializers import GameSerializer, PlayerSerializer, TargetSerializer
 from .models import Game, Player, Target
-from django.db.models.signals import post_save
-from django.dispatch import receiver
+# from django.db.models.signals import post_save
+# from django.dispatch import receiver
 import requests
 from rest_framework.response import Response
 # from rest_framework.decorators import api_view
@@ -70,20 +70,22 @@ class TargetViewSet(viewsets.ModelViewSet):
             player = get_object_or_404(Player, player_id=body)
         except:
             return Response(status=403)
-        game = get_object_or_404(Game, game_id=self.kwargs['games_pk'])
         target = self.get_object()
+        game = target.game
         current_location = get(firebase_url + "/games/{}/tanks/{}.json".format(game.game_id, player.player_id)).json()
         target_id = target.target_id
         if abs(current_location['x'] - target.x) < 100 and abs(current_location['y'] - target.y) < 100:
             player.add_point()
             self.perform_destroy(target)
             delete(firebase_url + "/games/{}/targets/{}.json".format(game.game_id, target_id))
-            Target.objects.create(game=game)
+            new_target = Target.objects.create(game=game)
+            new_target.put()
             return Response("Player")
         else:
             self.perform_destroy(target)
             delete(firebase_url +"/games/{}/targets/{}.json".format(game.game_id, target_id))
-            Target.objects.create(game=game)
+            new_target = Target.objects.create(game=game)
+            new_target.put()
             return Response("Else")
 
 
@@ -117,12 +119,12 @@ class TargetViewSet(viewsets.ModelViewSet):
         #     new_target.save()
 
 
-@receiver(post_save, sender=Target)
-def put_targets(sender, **kwargs):
-    '''Whever a target is saved locally if it has a game assigned it is put
-    into firebase'''
-    new_target = kwargs['instance']
-    if new_target.game != None:
-        new_target.put()
-    else:
-        pass
+# @receiver(post_save, sender=Target)
+# def put_targets(sender, **kwargs):
+#     '''Whever a target is saved locally if it has a game assigned it is put
+#     into firebase'''
+#     new_target = kwargs['instance']
+#     if new_target.game != None:
+#         new_target.put()
+#     else:
+#         pass
