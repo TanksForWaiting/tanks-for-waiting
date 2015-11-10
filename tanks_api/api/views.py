@@ -101,14 +101,14 @@ def put_tanks(sender, **kwargs):
     else:
         current_player = 1
         for player in game.players.all(): #Puts players into starting locations.
-            if current_player == 1:
-                put(firebase_url + '/games/{}/tanks/{}.json'.format(game.game_id, player.player_id), json={"x":20,"y":20,"direction":2})
-            elif current_player == 2:
-                put(firebase_url + '/games/{}/tanks/{}.json'.format(game.game_id, player.player_id), json={"x":480,"y":480,"direction":1})
-            elif current_player == 3:
-                put(firebase_url + '/games/{}/tanks/{}.json'.format(game.game_id, player.player_id), json={"x":480,"y":20,"direction":1})
-            else:
-                put(firebase_url + '/games/{}/tanks/{}.json'.format(game.game_id, player.player_id), json={"x":20,"y":480,"direction":2})
+            # if current_player == 1:
+            put(firebase_url + '/games/{}/tanks/{}.json'.format(game.game_id, player.player_id), json={"x":20,"y":20,"direction":"E"})
+            # elif current_player == 2:
+            #     put(firebase_url + '/games/{}/tanks/{}.json'.format(game.game_id, player.player_id), json={"x":480,"y":480,"direction":"W"})
+            # elif current_player == 3:
+            #     put(firebase_url + '/games/{}/tanks/{}.json'.format(game.game_id, player.player_id), json={"x":480,"y":20,"direction":"W"})
+            # else:
+            #     put(firebase_url + '/games/{}/tanks/{}.json'.format(game.game_id, player.player_id), json={"x":20,"y":480,"direction":"E"})
             put(firebase_url + '/games/{}/scores/{}/score.json'.format(game.game_id, player.player_id), data=str(player.score))
             current_player += 1
         for target in game.targets.all():
