@@ -39,10 +39,7 @@ class GameViewSet(viewsets.GenericViewSet,
             return serializer_class(*args, **kwargs)
 
 
-class PlayerViewSet(viewsets.GenericViewSet,
-                                CreateModelMixin,
-                                ListModelMixin,
-                                RetrieveModelMixin):
+class PlayerViewSet(viewsets.ModelViewSet):
     queryset = Player.objects.all()
     serializer_class = PlayerSerializer
 
