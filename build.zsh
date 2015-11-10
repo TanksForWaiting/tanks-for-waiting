@@ -36,7 +36,13 @@ cp bower_components/angular-route/angular-route.js dist/bower_components/angular
 mkdir -p dist/bower_components/modernizr/src/
 cp bower_components/modernizr/modernizr.js dist/bower_components/modernizr/modernizr.js
 
-mkdir -p dist/bower_components/font-awesome/src/
+mkdir -p dist/bower_components/font-awesome/css/
 cp bower_components/font-awesome/css/font-awesome.min.css dist/bower_components/font-awesome/css/font-awesome.min.css
+
+mkdir -p dist/bower_components/firebase/
+cp bower_components/firebase/firebase.js dist/bower_components/firebase/firebase.js
+
+mkdir -p dist/bower_components/angularfire/dist/
+cp bower_components/angularfire/dist/angularfire.min.js dist/bower_components/angularfire/dist/angularfire.min.js
 
 npm start
