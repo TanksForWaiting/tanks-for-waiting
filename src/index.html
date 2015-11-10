@@ -13,7 +13,7 @@
         <link rel="stylesheet" href="../bower_components/normalize-css/normalize.css" />
         <link rel="stylesheet" href="../bower_components/font-awesome/css/font-awesome.min.css" />
         <link rel="stylesheet" href="css/main.css">
-        <script src="../bower_components/modernizr/modernizr.js"></script>
+        <!-- <script src="../bower_components/modernizr/src/Modernizr.js"></script> -->
     </head>
     <body>
         <!--[if lt IE 8]>
@@ -21,17 +21,22 @@
         <![endif]-->
 
         <!-- Add your site or application content here -->
-        <main class="container">
-          <canvas id="screen" width="500" height="500" style="border:1px solid #000000;">
-        </main>
+        <div class="container" ng-app="tanks-for-waiting" ng-controller="GameController">
+          <p>Player Score:{{score}}</p>
+          <button id="button" ng-click="startGame()" ng-hide="gameRunning"><i id="spin-one" class="fa fa-cog fa-spin hide-me"></i>&nbsp;Click to Start Driving your Tank!&nbsp;<i id="spin-two" class="fa fa-cog fa-spin hide-me"></i></button>
+          <canvas id="screen" ng-show="gameRunning" width="500" height="500" style="border:1px solid #000000;">
+        </div>
 
         <script src="../bower_components/jquery/dist/jquery.js"></script>
         <script src="../bower_components/angular/angular.js"></script>
         <script src="../bower_components/angular-route/angular-route.js"></script>
+        <script src="../bower_components/firebase/firebase.js"></script>
+        <script src="../bower_components/angularfire/dist/angularfire.min.js"></script>
 
         <script>window.jQuery || document.write('<script src="js/vendor/jquery-1.11.2.min.js"><\/script>')</script>
         <script src="js/plugins.js"></script>
         <script src="js/main.js"></script>
+        <script src="js/gameController.js"></script>
 
         <!-- Google Analytics: change UA-XXXXX-X to be your site's ID. -->
         <script>
