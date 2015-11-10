@@ -33,8 +33,6 @@
                         })
                         .then(function(response) {
                                 gameID = response.data.game_id;
-                                // playerID = "b5f21d45-5837-4286-8d2a-5eb7b9986b21";
-                                // gameID = "aed394ec-84d1-4c01-b3b2-d243c2901953";
                                 firebaseref = new Firebase(FIREBASE_SERVER_URL + "/games/" + gameID); //websocket to firebase api
                                 var obj = $firebaseObject(firebaseref); //websocket to firebase api
                                 obj.$bindTo($scope, "game").then(function() {
@@ -62,52 +60,88 @@
                 y: canvas.height
             }; // stores the width and height of the canvas for later use for placing entities on the canvas
 
-            this.tanks = [new Player (this, $scope.game.tanks[playerID])]; //will hold all of the tanks in the game
-
-            for (var key in $scope.game.tanks) {
-              if (key !== playerID) {
-                this.tanks.push(new Player(this, $scope.game.tanks[key]));
-              }
-            }
-            this.targets = [];
-            for (key in $scope.game.targets) {
-              this.targets.push(new Target(this, $scope.game.targets[key]));
-            }
             var self = this;
-            // var framesPerSecond = function() { // framesPerSecond is going to get run about 60 times a second and it's responsible for running all the main game logic
-            //     self.update(); //updates the screen
-            //     self.draw(screen, gameSize); //based upon what's happening in the game
-            //     requestAnimationFrame(framesPerSecond); // and then asks to run framesPerSecond again
-            //     // console.log("hello"); // uncomment the console log to see this 60fps in action
-            // };
-            //
-            // framesPerSecond();
+
+            this.tanks = [new Player(this, $scope.game.tanks[playerID])]; //will hold all of the tanks in the game
+            this.tanks.concat(self.refreshTanks(this));
+            this.targets = self.refreshTargets(this);
+            // this.walls = [new Wall(this, {
+            //     x: 40,
+            //     y: 40
+            // }, {
+            //     x: 80,
+            //     y: 460
+            // }),
+            // new Wall(this, {
+            //     x: 150,
+            //     y: 40
+            // }, {
+            //     x: 222,
+            //     y: 60
+            // })];
+
             $interval(function() {
-                self.update(); //updates the screen
-                self.draw(screen, gameSize); //based upon what's happening in the game
+                if (self.isReady) {
+                    self.update(); //updates the screen
+                    self.draw(screen, gameSize); //based upon what's happening in the game
+                }
             }, 16.7);
         };
 
         Game.prototype = { //gives Game a prototype
+
+            isReady: true,
+
             update: function() { //updates the movement of all the on screen entities
                 for (var i = 0; i < this.tanks.length; i++) {
                     this.tanks[i].update();
                 }
-                var thisPlayer = this.tanks[0]; 
+
+                var thisPlayer = this.tanks[0];
+
+                var deleteError = function(errobj) {
+                    console.log('Error deleting target: ' + JSON.stringify(errobj));
+                };
+
+                var deleteSuccess = function(response) {
+                    console.log(response);
+                    if (response.nope) {
+                        // Did not hit target.
+                        //if no, return something (currently it returns the string “nope” but that can be changed)
+                    } else {
+                        // Was a hit.
+                        // Update score from $scope.game.tanks[playID];
+                    }
+                };
+                $scope.game.tanks[playerID].x = thisPlayer.location().x;
+                $scope.game.tanks[playerID].y = thisPlayer.location().y;
+
                 for (i = 0; i < this.targets.length; i++) {
                     if (colliding(thisPlayer, this.targets[i])) {
-                        console.log("HIT!");
-                        $scope.score += 1;
-                        this.targets.splice(i, 1);
+                        // this.isReady = false;
+                        console.log(this.targets[i].target_id);
+                        if ($scope.game.targets[this.targets[i].target_id].is_hit === 0) {
+                            // console.log("HIT!");
+                            console.log(playerID);
+                            $scope.game.targets[this.targets[i].target_id].is_hit = 1;
+                            $http.delete(DJANGO_SERVER_URL + "/games/" + gameID + "/targets/" + this.targets[i].target_id + "/", {
+                                data: playerID
+                            }).then(deleteSuccess, deleteError);
+
+                        }
+                        // this.isReady = true;
+                        // $scope.score += 1;
+                        // this.targets.splice(i, 1);
                     }
                 }
+                this.tanks = this.tanks.slice(0, 1).concat(this.refreshTanks(this));
+                this.targets = this.refreshTargets(this);
             },
 
             draw: function(screen, gameSize) {
                 screen.clearRect(0, 0, gameSize.x, gameSize.y);
-                for (var i = 0; i < this.tanks.length; i++) {
+                for (var i = 0; i < this.tanks.length; i++) { //This loop draws the tanks
                     drawTank(screen, this.tanks[i]);
-                    // drawTarget(screen, this.tanks[i]);
                     if (i === 0) {
                         if (this.tanks[i].keyboarder.isDown(this.tanks[i].keyboarder.KEYS.LEFT)) {
                             drawDrillHeadLeft(screen, this.tanks[i]);
@@ -120,12 +154,31 @@
                         }
                     }
                 }
-                for (i = 0; i < this.targets.length; i++) {
+                for (i = 0; i < this.targets.length; i++) { //This loop draws the targets
                     drawTarget(screen, this.targets[i]);
-                    // drawTarget(screen, this.tanks[i]);
-
+                }
+                for (i = 0; i < this.walls.length; i++) { //This loop draws the walls
+                    this.walls[i].draw(screen);
                 }
             },
+
+            refreshTanks: function(thisGame) {
+                var tanks = [];
+                for (var key in $scope.game.tanks) {
+                    if (key !== playerID) {
+                        tanks.push(new Player(this, $scope.game.tanks[key]));
+                    }
+                }
+                return tanks;
+            },
+
+            refreshTargets: function(thisGame) {
+                var targets = [];
+                for (var key in $scope.game.targets) {
+                    targets.push(new Target(thisGame, $scope.game.targets[key], key));
+                }
+                return targets;
+            }
         };
         var Player = function(game, location) {
             this.game = game;
@@ -141,6 +194,11 @@
         };
 
         Player.prototype = {
+
+            location: function() {
+                return this.center;
+            },
+
             update: function() {
                 if (this.keyboarder.isDown(this.keyboarder.KEYS.LEFT)) {
                     if (this.center.x <= 10) {
@@ -173,7 +231,7 @@
             }
         };
 
-        var Target = function(game, location) {
+        var Target = function(game, location, target_id) {
             this.game = game;
             this.size = {
                 x: 10,
@@ -183,11 +241,27 @@
                 x: location.x,
                 y: location.y
             }; //tells the game where the targets are at the moment, starting at half way through the screen and just above the bottom
+            this.target_id = target_id;
+            this.is_hit = 0;
         };
 
         Target.prototype = {
             update: function() {
                 console.log("helllo");
+            }
+        };
+
+        var Wall = function(game, topLeft, bottomRight) {
+            this.game = game;
+            this.topLeft = topLeft;
+            this.bottomRight = bottomRight;
+        };
+
+        Wall.prototype = {
+            draw: function(screen) {
+                screen.fillRect(this.topLeft.x, //x coordinate
+                    this.topLeft.y, // y coordinate
+                    this.bottomRight.x - this.topLeft.x, this.bottomRight.y - this.topLeft.y);
             }
         };
 
