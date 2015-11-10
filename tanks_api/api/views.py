@@ -1,4 +1,5 @@
 from django.shortcuts import get_object_or_404
+from django.db import transaction
 from rest_framework import viewsets
 from rest_framework.mixins import CreateModelMixin, ListModelMixin, RetrieveModelMixin
 from .serializers import GameSerializer, PlayerSerializer, TargetSerializer
@@ -57,6 +58,7 @@ class TargetViewSet(viewsets.ModelViewSet):
         context['game'] = get_object_or_404(Game, game_id=self.kwargs['games_pk'])
         return context
 
+    @transaction.atomic
     def destroy(self, request, *args, **kwargs):
         '''Destroys the target both locally and in firebaseio
         Tries to find a player_id in the payload, if it doesn't it assumes
@@ -71,48 +73,48 @@ class TargetViewSet(viewsets.ModelViewSet):
         game = get_object_or_404(Game, game_id=self.kwargs['games_pk'])
         target = self.get_object()
         current_location = get(firebase_url + "/games/{}/tanks/{}.json".format(game.game_id, player.player_id)).json()
+        target_id = target.target_id
         if abs(current_location['x'] - target.x) < 100 and abs(current_location['y'] - target.y) < 100:
             player.add_point()
-            delete(firebase_url + "/games/{}/targets/{}.json".format(game.game_id, target.target_id))
             self.perform_destroy(target)
-            new_target = Target(game=game)
-            new_target.save()
-            game.save()
+            delete(firebase_url + "/games/{}/targets/{}.json".format(game.game_id, target_id))
+            Target.objects.create(game=game)
             return Response("Player")
         else:
-            delete(firebase_url +"/games/{}/targets/{}.json".format(game.game_id, target.target_id))
             self.perform_destroy(target)
-            new_target = Target(game=game)
-            new_target.save()
+            delete(firebase_url +"/games/{}/targets/{}.json".format(game.game_id, target_id))
+            Target.objects.create(game=game)
             return Response("Else")
 
 
-@receiver(post_save, sender=Game)
-def put_tanks(sender, **kwargs):
-    '''After saving a game if it has players it creates the game in firebase.
-    It ensures all of the targets in the game locally are in firebase and then
-    creates more until there are 5.  It also puts each player into firebase.'''
-    game = kwargs['instance']
-    if len(game.players.all()) == 0:
-        pass
-    else:
-        current_player = 1
-        for player in game.players.all(): #Puts players into starting locations.
-            # if current_player == 1:
-            put(firebase_url + '/games/{}/tanks/{}.json'.format(game.game_id, player.player_id), json={"x":20,"y":20,"direction":"E"})
-            # elif current_player == 2:
-            #     put(firebase_url + '/games/{}/tanks/{}.json'.format(game.game_id, player.player_id), json={"x":480,"y":480,"direction":"W"})
-            # elif current_player == 3:
-            #     put(firebase_url + '/games/{}/tanks/{}.json'.format(game.game_id, player.player_id), json={"x":480,"y":20,"direction":"W"})
-            # else:
-            #     put(firebase_url + '/games/{}/tanks/{}.json'.format(game.game_id, player.player_id), json={"x":20,"y":480,"direction":"E"})
-            put(firebase_url + '/games/{}/scores/{}/score.json'.format(game.game_id, player.player_id), data=str(player.score))
-            current_player += 1
-        for target in game.targets.all():
-            put(firebase_url + '/games/{}/targets/{}.json'.format(game.game_id, target.target_id), json={"x":target.x,"y":target.y,"is_hit":0})
-        while len(game.targets.all()) < 5:
-            new_target = Target(game=game)
-            new_target.save()
+# @receiver(post_save, sender=Game)
+# def put_tanks(sender, **kwargs):
+#     '''After saving a game if it has players it creates the game in firebase.
+#     It ensures all of the targets in the game locally are in firebase and then
+#     creates more until there are 5.  It also puts each player into firebase.'''
+#     game = kwargs['instance']
+#     if len(game.players.all()) == 0:
+#         pass
+    # else:
+    #     current_player = 1
+        # for player in game.players.all(): #Puts players into starting locations.
+        #     # if current_player == 1:
+        #     # player.put(game_id, player_id, x=1, y=1, direction="E")
+        #     put(firebase_url + '/games/{}/tanks/{}.json'.format(game.game_id, player.player_id), json={"x":20,"y":20,"direction":"E"})
+        #     # elif current_player == 2:
+        #     #     put(firebase_url + '/games/{}/tanks/{}.json'.format(game.game_id, player.player_id), json={"x":480,"y":480,"direction":"W"})
+        #     # elif current_player == 3:
+        #     #     put(firebase_url + '/games/{}/tanks/{}.json'.format(game.game_id, player.player_id), json={"x":480,"y":20,"direction":"W"})
+        #     # else:
+        #     #     put(firebase_url + '/games/{}/tanks/{}.json'.format(game.game_id, player.player_id), json={"x":20,"y":480,"direction":"E"})
+        #     put(firebase_url + '/games/{}/scores/{}.json'.format(game.game_id, player.player_id), data=str(player.score))
+        #     current_player += 1
+    # else:
+    #     for target in game.targets.all():
+    #         target.put()
+        # while len(game.targets.all()) < 5:
+        #     new_target = Target(game=game)
+        #     new_target.save()
 
 
 @receiver(post_save, sender=Target)
@@ -120,8 +122,7 @@ def put_targets(sender, **kwargs):
     '''Whever a target is saved locally if it has a game assigned it is put
     into firebase'''
     new_target = kwargs['instance']
-    game = new_target.game
     if new_target.game != None:
-        requests.put(firebase_url + '/games/{}/targets/{}.json'.format(game.game_id, new_target.target_id), json={"x":new_target.x,"y":new_target.y,"is_hit":0})
+        new_target.put()
     else:
         pass
