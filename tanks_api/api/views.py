@@ -110,7 +110,7 @@ def put_tanks(sender, **kwargs):
             else:
                 put(firebase_url + '/games/{}/tanks/{}.json'.format(game.game_id, player.player_id), json={"x":20,"y":480,"direction":2})
             put(firebase_url + '/games/{}/scores/{}/score.json'.format(game.game_id, player.player_id), data=str(player.score))
-            player += 1
+            current_player += 1
         for target in game.targets.all():
             put(firebase_url + '/games/{}/targets/{}.json'.format(game.game_id, target.target_id), json={"x":target.x,"y":target.y,"is_hit":0})
         while len(game.targets.all()) < 5:

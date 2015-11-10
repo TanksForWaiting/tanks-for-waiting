@@ -19,7 +19,7 @@ def test_post_game():
     assert check_game.status_code == 200
     assert len(player.json()['player_id']) == 36
     assert len(new_game.json()['game_id']) == 36
-    assert new_game.json()['players'][0] == player_id
+    assert player_id in new_game.json()['players'] 
     # assert len(check_game.json()['tanks']) == 1
     assert len(check_game.json()['targets']) == 5
 
@@ -51,7 +51,7 @@ def test_player_destroy_target():
     target = targets['targets'][str(target_id)]
     put(firebase_url + '/games/{}/tanks/{}/x.json'.format(game['game_id'],player_id), data=str(target['x']))
     put(firebase_url + '/games/{}/tanks/{}/y.json'.format(game['game_id'],player_id), data=str(target['y']))
-    delete_target = delete(local_url + 'games/{}/targets/{}/'.format(game['game_id'], target_id), json=player_id)
+    delete_target = delete(local_url + 'games/{}/targets/{}/'.format(game['game_id'], target_id), data=player_id)
     check_data = get(firebase_url + '/games/{}.json'.format(game['game_id'])).json()
     assert target_id not in check_data['targets']
     assert delete_target.status_code == 200
