@@ -65,27 +65,33 @@
             this.tanks = [new Player(this, $scope.game.tanks[playerID])]; //will hold all of the tanks in the game
             this.tanks.concat(self.refreshTanks(this));
             this.targets = self.refreshTargets(this);
-            this.walls = [new Wall(this, {
-                x: 40,
-                y: 40
-            }, {
-                x: 45,
-                y: 460
-            }),
-            new Wall(this, {
-                x: 40,
-                y: 40
-            }, {
-                x: 225,
-                y: 45
-            }),
-            new Wall(this, {
-                x: 45,
-                y: 460
-            }, {
-                x: 225,
-                y: 455,
-            })];
+            this.walls = [
+              //left outter wall
+              new Wall(this, 40, 40, 45, 460),
+              new Wall(this, 40, 40, 225, 45),
+              new Wall(this, 40, 460, 225, 455),
+              //right outer wall
+              new Wall(this, 275, 40, 460, 45),
+              new Wall(this, 460, 40, 455, 460),
+              new Wall(this, 275, 455, 455, 460),
+              //top center wall
+              new Wall(this, 80, 80, 420, 85),
+              new Wall(this, 80, 80, 85, 225),
+              new Wall(this, 420, 80, 425, 225),
+            // new Wall(this, {
+            //     x: 40,
+            //     y: 40
+            // }, {
+            //     x: 225,
+            //     y: 45
+            // }),
+            // new Wall(this, {
+            //     x: 45,
+            //     y: 460
+            // }, {
+            //     x: 225,
+            //     y: 455,
+            ];
 
             $interval(function() {
                 if (self.isReady) {
@@ -267,17 +273,20 @@
             }
         };
 
-        var Wall = function(game, topLeft, bottomRight) {
+        var Wall = function(game, xmin, ymin, xmax, ymax) {
             this.game = game;
-            this.topLeft = topLeft;
-            this.bottomRight = bottomRight;
+            this.xmin = xmin;
+            this.ymin = ymin;
+            this.xmax = xmax;
+            this.ymax = ymax;
         };
 
         Wall.prototype = {
             draw: function(screen) {
-                screen.fillRect(this.topLeft.x, //x coordinate
-                    this.topLeft.y, // y coordinate
-                    this.bottomRight.x - this.topLeft.x, this.bottomRight.y - this.topLeft.y);
+                screen.fillRect(this.xmin, //x coordinate
+                    this.ymin, // y coordinate
+                    this.xmax - this.xmin, //width
+                    this.ymax - this.ymin); //height
             }
         };
 
