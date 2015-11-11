@@ -94,23 +94,75 @@ textarea {
 /* ==========================================================================
    Author's custom styles
    ========================================================================== */
-canvas {
-  display: block;
-  position: absolute;
-  margin: auto;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
-}
-button {
-
-}
 .hide-me {
   display: none;
 }
+body {
+  background-color: #FD7318;
+}
+.container {
 
+}
+.instructions {
+  padding-top: 10%;
+  padding-left: 5%;
+  p {
+    font-weight: bold;
+  }
+  h4 {
+    font-family: 'Press Start 2P', cursive;
+  }
+}
+.game {
+  padding-top: 10%;
+  canvas {
+    display: block;
+    margin-bottom: 1.25%;
+  }
+  button {
+    width: 500px;
+    font-family: 'Press Start 2P', cursive;
+    font-size: 13px;
+    height: 50px;
+    background-color: #5FA3C6;
+  }
+}
+.graphic {
+  padding-top: 10%;
+  img {
 
+  }
+}
+
+//column styling
+*, *:after, *:before {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+[class*='col-'] {
+  padding-right: 20px;
+}
+[class*='col-']:last-of-type {
+  padding-right: 0;
+}
+.grid:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+.col-left {
+  float: left;
+  width: 20%;
+}
+.col-middle {
+  float: left;
+  width: 40%;
+}
+.col-right {
+  float: left;
+  width: 40%;
+}
 
 
 
