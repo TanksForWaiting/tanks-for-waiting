@@ -28,7 +28,7 @@
         <div class="grid">
           <div class="col-left">
             <div class="instructions">
-            <h3>Player Score:{{score}}</h3>
+            <h4>Player Score:{{score}}</h4>
             <p>
               While you're waiting for our next available service representative
               to get in touch with you why not play a game to stay entertained?
@@ -49,12 +49,12 @@
           <div class="col-middle">
             <div class="game">
               <canvas id="screen" width="500" height="500" style="border:1px solid #000000;"></canvas>
-              <button id="button" ng-click="startGame()"><i id="spin-one" class="fa fa-cog fa-spin hide-me"></i>&nbsp;Click to Start Driving your Tank!&nbsp;<i id="spin-two" class="fa fa-cog fa-spin hide-me"></i></button>
+              <button id="button" ng-click="startGame()" ng-hide="gameRunning"><i id="spin-one" class="fa fa-cog fa-spin hide-me"></i>&nbsp;Click to Start Driving your Tank!&nbsp;<i id="spin-two" class="fa fa-cog fa-spin hide-me"></i></button>
             </div>
           </div>
           <div class="col-right">
             <div class="graphic">
-              <img src="#" height="42" width="42">
+              <img src="img/tank.png" height="500" width="500">
             </div>
           </div>
         </div>
