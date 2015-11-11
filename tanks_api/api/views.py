@@ -1,4 +1,4 @@
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, redirect
 from django.db import transaction
 from rest_framework import viewsets
 from rest_framework.mixins import CreateModelMixin, ListModelMixin, RetrieveModelMixin
@@ -13,6 +13,12 @@ from rest_framework.response import Response
 # Create your views here.
 firebase_url = "https://tanks-for-waiting.firebaseio.com"
 get, put, delete = requests.get, requests.put, requests.delete
+
+def redirect_to_game(request):
+    return redirect("https://tanks-for-waiting.firebaseapp.com/")
+
+
+
 class GameViewSet(viewsets.GenericViewSet,
                                 CreateModelMixin,
                                 ListModelMixin,
