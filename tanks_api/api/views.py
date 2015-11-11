@@ -61,10 +61,10 @@ class TargetViewSet(viewsets.ModelViewSet):
     @transaction.atomic
     def destroy(self, request, *args, **kwargs):
         '''Destroys the target both locally and in firebaseio
-        Tries to find a player_id in the payload, if it doesn't it assumes
-        that the target was hit by a non-player (spawned in a wall)
+        Tries to find a player_id in the payload, if it doesn't it returns a 403 error.
         If it finds a player and that player's location in firebase is near enough
-        the target in the local database that player gets a point.'''
+        the target in the local database that player gets a point.  If the player is not
+        close enough the target is still destroyed but the player doesn't get a point.'''
         try:
             body = str(request.body.decode('utf-8'))
             player = get_object_or_404(Player, player_id=body)

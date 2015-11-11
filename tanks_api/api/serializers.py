@@ -50,8 +50,9 @@ class GameSerializer(serializers.ModelSerializer):
         #     game = over_one.filter(num_players__lte=3).order_by('num_players')[0]
         #     game.players.add(self.context['player'])
         #     game.save()
+        #     self.context['player'].put()
         #     return game
-        # except:
+        except:
         game = Game.objects.create()
         game.players.add(self.context['player'])
         game.save()
