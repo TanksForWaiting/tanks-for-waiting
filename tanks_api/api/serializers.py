@@ -1,7 +1,7 @@
 from rest_framework import serializers
-from django.db.models import Count
+# from django.db.models import Count
 from .models import Player, Game, Target
-import requests
+from django.db import transaction
 
 class TargetSerializer(serializers.ModelSerializer):
     x = serializers.IntegerField(read_only=True, min_value=0)
@@ -16,9 +16,8 @@ class TargetSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         '''When you post to targets it makes a target in the game it pulls out
         of the url.'''
-        t = Target(game=self.context['game'])
-        t.save()
-        return t
+        target = Target.objects.create(game=self.context['game'])
+        return target
 
 
 
@@ -38,22 +37,27 @@ class GameSerializer(serializers.ModelSerializer):
         model = Game
         fields = ('game_id', 'players')
 
+    @transaction.atomic
     def create(self, validated_data):
         '''Puts players into exisiting games before making new games.
         When you post a game with a payload of a player this looks at all
         the games in the database, finds those with between 1-3 players
         and puts the new player into a game with the fewest possible players.
         If it fails to find such a game it creates a new one for the player'''
-        try:
-            anno = Game.objects.annotate(num_players=Count('players'))
-            over = anno.filter(num_players__gte=1)
-            game = anno.filter(num_players__lte=3).order_by('num_players')[0]
-            game.players.add(self.context['player'])
-            game.save()
-            return game
-        except:
-            g = Game()
-            g.save()
-            g.players.add(self.context['player'])
-            g.save()
-            return g
+        # try:
+        #     add_player_count = Game.objects.annotate(num_players=Count('players'))
+        #     over_one = add_player_count.filter(num_players__gte=1)
+        #     game = over_one.filter(num_players__lte=3).order_by('num_players')[0]
+        #     game.players.add(self.context['player'])
+        #     game.save()
+        #     self.context['player'].put()
+        #     return game
+        # except:
+        game = Game.objects.create()
+        game.players.add(self.context['player'])
+        game.save()
+        self.context['player'].put()
+        for _ in range(5 - len(game.targets.all())):
+            x = Target.objects.create(game=game)
+            x.put()
+        return game
