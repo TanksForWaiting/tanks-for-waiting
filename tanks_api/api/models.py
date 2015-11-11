@@ -24,9 +24,11 @@ class Player(models.Model):
     game = models.ForeignKey(Game, null=True, related_name='players')
 
     def add_point(self):
+        '''When a player gets a point it is recorded locally as well as
+        put to the firebase database.'''
         self.score += 1
         self.save()
-        requests.put('https://tanks-for-waiting.firebaseio.com/games/{}/tanks/{}/score.json'.format(self.game.game_id, self.player_id), data=str(self.score))
+        requests.put('https://tanks-for-waiting.firebaseio.com/games/{}/scores/{}/score.json'.format(self.game.game_id, self.player_id), data=str(self.score))
 
     def __str__(self):
         return str(self.player_id)
@@ -38,6 +40,8 @@ class Target(models.Model):
     y = models.PositiveSmallIntegerField()
 
     def save(self,*args, **kwargs):
+        '''When you save a target it generates a random point between 20 and 480
+        where it will spawn on both x and y axes.'''
         self.x = random.randint(20,480)
         self.y = random.randint(20,480)
         super(Target, self).save(*args, **kwargs)

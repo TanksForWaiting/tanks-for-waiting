@@ -65,20 +65,33 @@
             this.tanks = [new Player(this, $scope.game.tanks[playerID])]; //will hold all of the tanks in the game
             this.tanks.concat(self.refreshTanks(this));
             this.targets = self.refreshTargets(this);
-            // this.walls = [new Wall(this, {
+            this.walls = [
+              //left outter wall
+              new Wall(this, 40, 40, 45, 460),
+              new Wall(this, 40, 40, 225, 45),
+              new Wall(this, 40, 460, 225, 455),
+              //right outer wall
+              new Wall(this, 275, 40, 460, 45),
+              new Wall(this, 460, 40, 455, 460),
+              new Wall(this, 275, 455, 455, 460),
+              //top center wall
+              new Wall(this, 80, 80, 420, 85),
+              new Wall(this, 80, 80, 85, 225),
+              new Wall(this, 420, 80, 425, 225),
+            // new Wall(this, {
             //     x: 40,
             //     y: 40
             // }, {
-            //     x: 80,
-            //     y: 460
+            //     x: 225,
+            //     y: 45
             // }),
             // new Wall(this, {
-            //     x: 150,
-            //     y: 40
+            //     x: 45,
+            //     y: 460
             // }, {
-            //     x: 222,
-            //     y: 60
-            // })];
+            //     x: 225,
+            //     y: 455,
+            ];
 
             $interval(function() {
                 if (self.isReady) {
@@ -115,6 +128,7 @@
                 };
                 $scope.game.tanks[playerID].x = thisPlayer.location().x;
                 $scope.game.tanks[playerID].y = thisPlayer.location().y;
+                $scope.game.tanks[playerID].direction= thisPlayer.direction;
 
                 for (i = 0; i < this.targets.length; i++) {
                     if (colliding(thisPlayer, this.targets[i])) {
@@ -125,7 +139,9 @@
                             console.log(playerID);
                             $scope.game.targets[this.targets[i].target_id].is_hit = 1;
                             $http.delete(DJANGO_SERVER_URL + "/games/" + gameID + "/targets/" + this.targets[i].target_id + "/", {
+
                                 data: playerID
+
                             }).then(deleteSuccess, deleteError);
 
                         }
@@ -143,13 +159,13 @@
                 for (var i = 0; i < this.tanks.length; i++) { //This loop draws the tanks
                     drawTank(screen, this.tanks[i]);
                     if (i === 0) {
-                        if (this.tanks[i].keyboarder.isDown(this.tanks[i].keyboarder.KEYS.LEFT)) {
+                        if (this.tanks[i].direction === "W") {
                             drawDrillHeadLeft(screen, this.tanks[i]);
-                        } else if (this.tanks[i].keyboarder.isDown(this.tanks[i].keyboarder.KEYS.RIGHT)) {
+                        } else if (this.tanks[i].direction === "E") {
                             drawDrillHeadRight(screen, this.tanks[i]);
-                        } else if (this.tanks[i].keyboarder.isDown(this.tanks[i].keyboarder.KEYS.UP)) {
+                        } else if (this.tanks[i].direction === "N") {
                             drawDrillHeadUp(screen, this.tanks[i]);
-                        } else if (this.tanks[i].keyboarder.isDown(this.tanks[i].keyboarder.KEYS.DOWN)) {
+                        } else if (this.tanks[i].direction === "S") {
                             drawDrillHeadDown(screen, this.tanks[i]);
                         }
                     }
@@ -182,6 +198,7 @@
         };
         var Player = function(game, location) {
             this.game = game;
+            this.direction = "E";
             this.size = {
                 x: 16,
                 y: 16
@@ -201,27 +218,32 @@
 
             update: function() {
                 if (this.keyboarder.isDown(this.keyboarder.KEYS.LEFT)) {
+                    this.direction = "W";
+
                     if (this.center.x <= 10) {
                         this.center.x = 8;
                     } else {
                         this.center.x -= 2;
                     }
                 }
-                if (this.keyboarder.isDown(this.keyboarder.KEYS.RIGHT)) {
+                else if (this.keyboarder.isDown(this.keyboarder.KEYS.RIGHT)) {
+                    this.direction = "E";
                     if (this.center.x >= 490) {
                         this.center.x = 492;
                     } else {
                         this.center.x += 2;
                     }
                 }
-                if (this.keyboarder.isDown(this.keyboarder.KEYS.UP)) {
+                else if (this.keyboarder.isDown(this.keyboarder.KEYS.UP)) {
+                    this.direction = "N";
                     if (this.center.y <= 10) {
                         this.center.y = 8;
                     } else {
                         this.center.y -= 2;
                     }
                 }
-                if (this.keyboarder.isDown(this.keyboarder.KEYS.DOWN)) {
+                else if (this.keyboarder.isDown(this.keyboarder.KEYS.DOWN)) {
+                    this.direction = "S";
                     if (this.center.y >= 490) {
                         this.center.y = 492;
                     } else {
@@ -251,17 +273,20 @@
             }
         };
 
-        var Wall = function(game, topLeft, bottomRight) {
+        var Wall = function(game, xmin, ymin, xmax, ymax) {
             this.game = game;
-            this.topLeft = topLeft;
-            this.bottomRight = bottomRight;
+            this.xmin = xmin;
+            this.ymin = ymin;
+            this.xmax = xmax;
+            this.ymax = ymax;
         };
 
         Wall.prototype = {
             draw: function(screen) {
-                screen.fillRect(this.topLeft.x, //x coordinate
-                    this.topLeft.y, // y coordinate
-                    this.bottomRight.x - this.topLeft.x, this.bottomRight.y - this.topLeft.y);
+                screen.fillRect(this.xmin, //x coordinate
+                    this.ymin, // y coordinate
+                    this.xmax - this.xmin, //width
+                    this.ymax - this.ymin); //height
             }
         };
 
@@ -326,4 +351,5 @@
                 b1.center.y - b1.size.y / 2 > b2.center.y + b2.size.y / 2);
         };
     }
+
 })(); // End of IIFE
