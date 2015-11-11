@@ -2,6 +2,7 @@
 <html class="no-js" lang="">
 
 <head>
+    <link href='https://fonts.googleapis.com/css?family=Press+Start+2P' rel='stylesheet' type='text/css'>
     <meta charset="utf-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <title>Tanks for Waiting</title>
@@ -26,12 +27,14 @@
     <div class="container" ng-app="tanks-for-waiting" ng-controller="GameController">
         <div class="grid">
           <div class="col-left">
-            <h3>Player Score:{{score}}</h3>
+            <div class="instructions">
+            <h2>Player Score:{{score}}</h2>
             <p>Fusce nec arcu maximus mauris imperdiet efficitur. Maecenas lobortis nibh justo. Duis aliquet metus sed luctus molestie. Sed eget libero accumsan, fermentum enim vel, scelerisque lorem. Etiam at hendrerit quam, id pretium tortor. Donec in enim ex. Integer eget sodales ligula. Curabitur id felis turpis. In hac habitasse platea dictumst. Sed erat ante, tempor mattis lorem non, tempor elementum dolor. In semper dui ut ligula fringilla, ut posuere eros semper. Duis aliquet purus eget consequat efficitur.</p>
+            </div>
           </div>
           <div class="col-middle">
+            <canvas id="screen" width="500" height="500" style="border:1px solid #000000;"></canvas>
             <button id="button" ng-click="startGame()"><i id="spin-one" class="fa fa-cog fa-spin hide-me"></i>&nbsp;Click to Start Driving your Tank!&nbsp;<i id="spin-two" class="fa fa-cog fa-spin hide-me"></i></button>
-            <canvas id="screen" width="500" height="500" style="border:1px solid #000000;">
           </div>
           <div class="col-right">
             <img src="#" height="42" width="42">

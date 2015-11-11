@@ -94,20 +94,25 @@ textarea {
 /* ==========================================================================
    Author's custom styles
    ========================================================================== */
-canvas {
-  // display: block;
-  // position: absolute;
-  // margin: auto;
-  // top: 0;
-  // bottom: 0;
-  // left: 0;
-  // right: 0;
-}
-button {
-
-}
 .hide-me {
   display: none;
+}
+.instructions {
+  padding-left: 5%;
+  h2 {
+    font-family: 'Press Start 2P', cursive;
+  }
+}
+canvas {
+  display: block;
+  margin: auto;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+button {
+  width: 500px;
 }
 
 //column styling
@@ -118,6 +123,7 @@ button {
 }
 [class*='col-'] {
   padding-right: 20px;
+  background-color: #FD7318;
 }
 [class*='col-']:last-of-type {
   padding-right: 0;
