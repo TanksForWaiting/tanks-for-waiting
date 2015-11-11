@@ -14,28 +14,26 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Game',
             fields=[
-                ('id', models.AutoField(primary_key=True, auto_created=True, verbose_name='ID', serialize=False)),
-                ('game_id', models.UUIDField(editable=False, default=uuid.uuid4, unique=True)),
+                ('game_id', models.UUIDField(primary_key=True, editable=False, serialize=False, default=uuid.uuid4, unique=True)),
             ],
         ),
         migrations.CreateModel(
             name='Player',
             fields=[
-                ('id', models.AutoField(primary_key=True, auto_created=True, verbose_name='ID', serialize=False)),
-                ('player_id', models.UUIDField(editable=False, default=uuid.uuid4)),
+                ('player_id', models.UUIDField(primary_key=True, editable=False, serialize=False, default=uuid.uuid4, unique=True)),
                 ('score', models.PositiveSmallIntegerField(default=0)),
                 ('x', models.PositiveSmallIntegerField(default=24)),
                 ('y', models.PositiveSmallIntegerField(default=24)),
-                ('game', models.ForeignKey(null=True, related_name='players', to_field='game_id', to='api.Game')),
+                ('game', models.ForeignKey(related_name='players', to='api.Game', null=True)),
             ],
         ),
         migrations.CreateModel(
             name='Target',
             fields=[
-                ('id', models.AutoField(primary_key=True, auto_created=True, verbose_name='ID', serialize=False)),
+                ('target_id', models.UUIDField(primary_key=True, editable=False, serialize=False, default=uuid.uuid4, unique=True)),
                 ('x', models.PositiveSmallIntegerField()),
                 ('y', models.PositiveSmallIntegerField()),
-                ('game', models.ForeignKey(null=True, related_name='targets', to_field='game_id', to='api.Game')),
+                ('game', models.ForeignKey(related_name='targets', to='api.Game', null=True)),
             ],
         ),
     ]
