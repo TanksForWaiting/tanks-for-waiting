@@ -98,21 +98,29 @@ textarea {
   display: none;
 }
 .instructions {
+  padding-top: 10%;
   padding-left: 5%;
-  h2 {
+  h3 {
     font-family: 'Press Start 2P', cursive;
   }
 }
-canvas {
-  display: block;
-  margin: auto;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
+.game {
+  padding-top: 10%;
+  canvas {
+    display: block;
+  }
+  button {
+    width: 500px;
+    font-family: 'Press Start 2P', cursive;
+    font-size: 13px;
+    height: 50px;
+  }
 }
-button {
-  width: 500px;
+.graphic {
+  padding-top: 10%;
+  img {
+
+  }
 }
 
 //column styling

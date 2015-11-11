@@ -28,16 +28,25 @@
         <div class="grid">
           <div class="col-left">
             <div class="instructions">
-            <h2>Player Score:{{score}}</h2>
-            <p>Fusce nec arcu maximus mauris imperdiet efficitur. Maecenas lobortis nibh justo. Duis aliquet metus sed luctus molestie. Sed eget libero accumsan, fermentum enim vel, scelerisque lorem. Etiam at hendrerit quam, id pretium tortor. Donec in enim ex. Integer eget sodales ligula. Curabitur id felis turpis. In hac habitasse platea dictumst. Sed erat ante, tempor mattis lorem non, tempor elementum dolor. In semper dui ut ligula fringilla, ut posuere eros semper. Duis aliquet purus eget consequat efficitur.</p>
+            <h3>Player Score:{{score}}</h3>
+            <p>While you're waiting for our next available service representative
+            to get in touch with you why not play a game to stay entertained? It
+            won't disrupt your place in our queue and you'll be alerted when your
+            representative is ready. Tanks for Waiting!
+            </p>
+            <
             </div>
           </div>
           <div class="col-middle">
-            <canvas id="screen" width="500" height="500" style="border:1px solid #000000;"></canvas>
-            <button id="button" ng-click="startGame()"><i id="spin-one" class="fa fa-cog fa-spin hide-me"></i>&nbsp;Click to Start Driving your Tank!&nbsp;<i id="spin-two" class="fa fa-cog fa-spin hide-me"></i></button>
+            <div class="game">
+              <canvas id="screen" width="500" height="500" style="border:1px solid #000000;"></canvas>
+              <button id="button" ng-click="startGame()"><i id="spin-one" class="fa fa-cog fa-spin hide-me"></i>&nbsp;Click to Start Driving your Tank!&nbsp;<i id="spin-two" class="fa fa-cog fa-spin hide-me"></i></button>
+            </div>
           </div>
           <div class="col-right">
-            <img src="#" height="42" width="42">
+            <div class="graphic">
+              <img src="#" height="42" width="42">
+            </div>
           </div>
         </div>
     </div>
