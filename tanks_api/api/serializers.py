@@ -52,7 +52,7 @@ class GameSerializer(serializers.ModelSerializer):
         #     game.save()
         #     self.context['player'].put()
         #     return game
-        except:
+        # except:
         game = Game.objects.create()
         game.players.add(self.context['player'])
         game.save()
