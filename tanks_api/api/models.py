@@ -31,7 +31,7 @@ class Player(models.Model):
                                                                      self.player_id), json={"x": self.x, "y": self.y, "direction": "E"})
         requests.put(firebase_url + '/games/{}/scores/{}.json'.format(
             self.game.game_id, self.player_id), data=str(self.score))
-            
+
     def add_point(self):
         '''When a player gets a point it is recorded locally as well as
         put to the firebase database.'''
@@ -64,3 +64,11 @@ class Target(models.Model):
 
     def __str__(self):
         return str((self.x, self.y))
+
+class Referral(models.Model):
+    url = models.URLField()
+    count = models.PositiveIntegerField(default=1)
+
+    def add(self):
+        self.count += 1
+        self.save()
