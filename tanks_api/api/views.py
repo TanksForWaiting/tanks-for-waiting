@@ -71,7 +71,7 @@ class TargetViewSet(viewsets.ModelViewSet):
         context['game'] = get_object_or_404(Game, game_id=self.kwargs['games_pk'])
         return context
 
-    # @transaction.atomic
+    @transaction.atomic
     def destroy(self, request, *args, **kwargs):
         '''Destroys the target both locally and in firebaseio
         Tries to find a player_id in the payload, if it doesn't it returns a 403 error.
