@@ -15,9 +15,8 @@ Including another URLconf
 """
 from django.conf.urls import include, url
 from django.contrib import admin
-from django.views.generic import TemplateView
 from rest_framework_nested import routers
-from api.views import GameViewSet, PlayerViewSet, TargetViewSet
+from api.views import GameViewSet, PlayerViewSet, TargetViewSet, redirect_to_game
 
 router = routers.SimpleRouter()
 router.register(r'games', GameViewSet)
@@ -31,5 +30,5 @@ urlpatterns = [
     url(r'^api/', include(router.urls)),
     url(r'^api/', include(targets_router.urls)),
     url(r'^docs/', include('rest_framework_swagger.urls')),
-    url(r'^', TemplateView.as_view(template_name='tanks_api/hello.html'))
+    url(r'^', redirect_to_game),
 ]
