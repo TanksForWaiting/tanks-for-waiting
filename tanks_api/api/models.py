@@ -29,15 +29,15 @@ class Player(models.Model):
     def put(self):
         requests.put(firebase_url + '/games/{}/tanks/{}.json'.format(self.game.game_id,
                                                                      self.player_id), json={"x": self.x, "y": self.y, "direction": "E"})
-        requests.put(firebase_url + '/games/{}/scores/{}.json'.format(
+        requests.put(firebase_url + '/games/{}/tanks/{}/score.json'.format(
             self.game.game_id, self.player_id), data=str(self.score))
-            
+
     def add_point(self):
         '''When a player gets a point it is recorded locally as well as
         put to the firebase database.'''
         self.score += 1
         self.save()
-        requests.put(firebase_url + '/games/{}/scores/{}.json'.format(
+        requests.put(firebase_url + '/games/{}/tanks/{}/score.json'.format(
             self.game.game_id, self.player_id), data=str(self.score))
 
     def __str__(self):
