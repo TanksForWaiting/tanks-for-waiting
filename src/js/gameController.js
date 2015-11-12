@@ -122,7 +122,11 @@
               //top center wall
               new Wall(this, 80, 80, 420, 85),
               new Wall(this, 80, 80, 85, 225),
-              new Wall(this, 420, 80, 425, 225)
+              new Wall(this, 420, 80, 425, 225),
+              //bottom center wall
+              new Wall(this, 80, 275, 85, 420),
+              new Wall(this, 85, 415, 420, 420),
+              new Wall(this, 420, 275, 425, 420)
             ];
         };
 
