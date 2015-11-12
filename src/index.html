@@ -28,7 +28,7 @@
         <div class="grid">
           <div class="col-left">
             <div class="instructions">
-            <h4>Player Score:{{score}}</h4>
+            <h4>Player Score:<span ng-show="gameRunning">{{score.$value}}</span></h4>
             <p>
               While you're waiting for our next available service representative
               to get in touch with you why not play a game to stay entertained?
