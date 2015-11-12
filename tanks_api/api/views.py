@@ -3,7 +3,8 @@ from django.db import transaction
 from rest_framework import viewsets
 from rest_framework.mixins import CreateModelMixin, ListModelMixin, RetrieveModelMixin
 from .serializers import GameSerializer, PlayerSerializer, TargetSerializer
-from .models import Game, Player, Target, Referral
+from .models import Game, Player, Target, RetiredPlayer
+from datetime import datetime
 # from django.db.models.signals import post_save
 # from django.dispatch import receiver
 import requests
@@ -52,19 +53,25 @@ class PlayerViewSet(viewsets.ModelViewSet):
     serializer_class = PlayerSerializer
 
     def create(self, request, *args, **kwargs):
-        try:
-            try:
-                referral = get_object_or_404(Referral, url=request.META.HTTP_REFERER)
-                referral.add()
-            except status.HTTP_404_NOT_FOUND:
-                Referral.objects.create(site=request.META.HTTP_REFERER)
-        except:
-            pass
+        # try:
+        #     try:
+        #         referral = get_object_or_404(Referral, url=request.META.HTTP_REFERER)
+        #         referral.add()
+        #     except status.HTTP_404_NOT_FOUND:
+        #         Referral.objects.create(site=request.META.HTTP_REFERER)
+        # except:
+        #     pass
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        RetiredPlayer.objects.create(playtime=instance.start_time - datetime.now())
+        self.perform_destroy(instance)
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 class TargetViewSet(viewsets.ModelViewSet):
     queryset = Target.objects.all()
