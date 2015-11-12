@@ -4,11 +4,11 @@
     var FIREBASE_SERVER_URL = "https://tanks-for-waiting.firebaseio.com";
 
     angular.module('tanks-for-waiting').controller('GameController', GameController);
-    GameController.$inject = ['$scope', '$http', '$interval', '$firebaseObject'];
+    GameController.$inject = ['$scope', '$http', '$interval', '$firebaseObject', '$firebaseArray'];
 
-    function GameController($scope, $http, $interval, $firebaseObject) {
+    function GameController($scope, $http, $interval, $firebaseObject, $firebaseArray) {
 
-        var firebaseref = null;
+        var firebasePlayerRef = null;
         var playerID = null; //player_id stored here
         var gameID = null; //game_id stored here
         $scope.gameRunning = false;
@@ -33,14 +33,17 @@
                         })
                         .then(function(response) {
                                 gameID = response.data.game_id;
-                                // playerID = "b5f21d45-5837-4286-8d2a-5eb7b9986b21";
-                                // gameID = "aed394ec-84d1-4c01-b3b2-d243c2901953";
-                                firebaseref = new Firebase(FIREBASE_SERVER_URL + "/games/" + gameID); //websocket to firebase api
-                                var obj = $firebaseObject(firebaseref); //websocket to firebase api
-                                obj.$bindTo($scope, "game").then(function() {
-                                    console.log($scope.game); // { foo: "bar" }
-                                    $scope.gameRunning = true;
+                                firebasePlayerRef = new Firebase(FIREBASE_SERVER_URL + "/games/" + gameID + "/tanks/" + playerID); //websocket to firebase api
+                                var playerObj = $firebaseObject(firebasePlayerRef); //websocket to firebase api
+                                playerObj.$bindTo($scope, "player").then(function() {
+                                    console.log($scope.player); // { foo: "bar" }
                                     new Game("screen");
+                                });
+                                firebaseScoreRef = new Firebase(FIREBASE_SERVER_URL + "/games/" + gameID + "/scores/" + playerID);
+                                var scoreObj = $firebaseObject(firebaseScoreRef);
+                                scoreObj.$bindTo($scope, "score").then(function() {
+                                    console.log($scope.score); // { foo: "bar" }
+                                    // new Game("screen");
                                 });
                             },
                             function(errobj) {
@@ -62,73 +65,169 @@
                 y: canvas.height
             }; // stores the width and height of the canvas for later use for placing entities on the canvas
 
-            this.tanks = [new Player (this, $scope.game.tanks[playerID])]; //will hold all of the tanks in the game
-
-            for (var key in $scope.game.tanks) {
-              if (key !== playerID) {
-                this.tanks.push(new Player(this, $scope.game.tanks[key]));
-              }
-            }
-            this.targets = [];
-            for (key in $scope.game.targets) {
-              this.targets.push(new Target(this, $scope.game.targets[key]));
-            }
             var self = this;
-            // var framesPerSecond = function() { // framesPerSecond is going to get run about 60 times a second and it's responsible for running all the main game logic
-            //     self.update(); //updates the screen
-            //     self.draw(screen, gameSize); //based upon what's happening in the game
-            //     requestAnimationFrame(framesPerSecond); // and then asks to run framesPerSecond again
-            //     // console.log("hello"); // uncomment the console log to see this 60fps in action
-            // };
-            //
-            // framesPerSecond();
-            $interval(function() {
-                self.update(); //updates the screen
-                self.draw(screen, gameSize); //based upon what's happening in the game
-            }, 16.7);
+            //initalizing the targets
+            firebaseTargetsRef = new Firebase(FIREBASE_SERVER_URL + "/games/" + gameID + "/targets/");
+            var targetsObj = $firebaseObject(firebaseTargetsRef);
+            $firebaseArray(firebaseTargetsRef).$loaded()
+              .then(function(targets) {
+                self.targets = self.refreshTargets(this, targets);
+                $scope.gameRunning = true;
+                $interval(function() {
+                    if (self.isReady) {
+                        self.update(); //updates the screen
+                        self.draw(screen, gameSize); //based upon what's happening in the game
+                    }
+                }, 16.7);
+              }, function() {
+                console.log("Failed to load targets");
+              });
+
+            var targetAdded = function() {
+              if ($scope.gameRunning) {
+                console.log("it was hit");
+                $firebaseArray(firebaseTargetsRef).$loaded()
+                  .then(function(targets) {
+                    self.targets = self.refreshTargets(this, targets);
+                  });
+              }
+
+            };
+            var targetRemoved = function(dataSnapshot) {
+              var destroyedTarget = dataSnapshot.val();
+              //draw explosion at x/y location ( destroyedTarget.x, destroyedTarget.y )
+              // new Explosion(location, duration)
+            };
+
+            firebaseTargetsRef.on("child_added", targetAdded,
+             function (err) {
+              console.log("failed");
+            });
+            firebaseTargetsRef.on("child_removed", targetRemoved,
+             function (err) {
+              console.log("failed");
+            });
+
+            this.tanks = [new Player(this, $scope.player)]; //will hold all of the tanks in the game
+            // this.tanks.concat(self.refreshTanks(this));
+            this.walls = [
+              // left outter wall
+              new Wall(this, 40, 40, 45, 460),
+              new Wall(this, 40, 40, 225, 45),
+              new Wall(this, 40, 460, 225, 455),
+              //right outer wall
+              new Wall(this, 275, 40, 460, 45),
+              new Wall(this, 460, 40, 455, 460),
+              new Wall(this, 275, 455, 455, 460),
+              //top center wall
+              new Wall(this, 80, 80, 420, 85),
+              new Wall(this, 80, 80, 85, 225),
+              new Wall(this, 420, 80, 425, 225)
+            ];
         };
 
         Game.prototype = { //gives Game a prototype
+
+            isReady: true,
+
             update: function() { //updates the movement of all the on screen entities
                 for (var i = 0; i < this.tanks.length; i++) {
                     this.tanks[i].update();
                 }
-                var thisPlayer = this.tanks[0]; 
+
+                var thisPlayer = this.tanks[0];
+
+                var deleteError = function(errobj) {
+                    console.log('Error deleting target: ' + JSON.stringify(errobj));
+                };
+
+                var deleteSuccess = function(response) {
+                    console.log(response);
+                    if (response.nope) {
+                        // Did not hit target.
+                        //if no, return something (currently it returns the string “nope” but that can be changed)
+                    } else {
+                        // Was a hit.
+                        // Update score from $scope.game.tanks[playID];
+                    }
+                };
+                $scope.player.x = thisPlayer.location().x;
+                $scope.player.y = thisPlayer.location().y;
+                $scope.player.direction= thisPlayer.direction;
+
                 for (i = 0; i < this.targets.length; i++) {
                     if (colliding(thisPlayer, this.targets[i])) {
-                        console.log("HIT!");
-                        $scope.score += 1;
-                        this.targets.splice(i, 1);
+                        // this.isReady = false;
+                        this.targets[i].fillStyle = 'black';
+                        console.log(this.targets[i].target_id);
+                        if (this.targets[i].is_hit === 0) {
+                            // console.log("HIT!");
+                            console.log(playerID);
+                            this.targets[i].is_hit = 1;
+                            $http.delete(DJANGO_SERVER_URL + "/games/" + gameID + "/targets/" + this.targets[i].target_id + "/", {
+
+                                data: playerID
+
+                            }).then(deleteSuccess, deleteError);
+
+                        }
+                        // this.isReady = true;
+                        // $scope.score += 1;
+                        // this.targets.splice(i, 1);
                     }
                 }
+                this.tanks = this.tanks.slice(0, 1);//.concat(this.refreshTanks(this)); --add back in for multiplayer
+                // this.targets = this.refreshTargets(this);
             },
 
             draw: function(screen, gameSize) {
                 screen.clearRect(0, 0, gameSize.x, gameSize.y);
-                for (var i = 0; i < this.tanks.length; i++) {
+
+                for (i = 0; i < this.targets.length; i++) { //This loop draws the targets
+                    drawTarget(screen, this.targets[i]);
+                }
+
+                for (i = 0; i < this.walls.length; i++) { //This loop draws the walls
+                    this.walls[i].draw(screen);
+                }
+
+                for (var i = 0; i < this.tanks.length; i++) { //This loop draws the tanks
                     drawTank(screen, this.tanks[i]);
-                    // drawTarget(screen, this.tanks[i]);
                     if (i === 0) {
-                        if (this.tanks[i].keyboarder.isDown(this.tanks[i].keyboarder.KEYS.LEFT)) {
+                        if (this.tanks[i].direction === "W") {
                             drawDrillHeadLeft(screen, this.tanks[i]);
-                        } else if (this.tanks[i].keyboarder.isDown(this.tanks[i].keyboarder.KEYS.RIGHT)) {
+                        } else if (this.tanks[i].direction === "E") {
                             drawDrillHeadRight(screen, this.tanks[i]);
-                        } else if (this.tanks[i].keyboarder.isDown(this.tanks[i].keyboarder.KEYS.UP)) {
+                        } else if (this.tanks[i].direction === "N") {
                             drawDrillHeadUp(screen, this.tanks[i]);
-                        } else if (this.tanks[i].keyboarder.isDown(this.tanks[i].keyboarder.KEYS.DOWN)) {
+                        } else if (this.tanks[i].direction === "S") {
                             drawDrillHeadDown(screen, this.tanks[i]);
                         }
                     }
                 }
-                for (i = 0; i < this.targets.length; i++) {
-                    drawTarget(screen, this.targets[i]);
-                    // drawTarget(screen, this.tanks[i]);
-
-                }
             },
+
+            refreshTanks: function(thisGame) {
+                var tanks = [];
+                for (var key in $scope.game.tanks) {
+                    if (key !== playerID) {
+                        tanks.push(new Player(this, $scope.game.tanks[key]));
+                    }
+                }
+                return tanks;
+            },
+
+            refreshTargets: function(thisGame, firebaseTargets) {
+                var targets = [];
+                for (var i = 0; i < firebaseTargets.length; i++) {
+                    targets.push(new Target(thisGame, firebaseTargets[i]));
+                }
+                return targets;
+            }
         };
         var Player = function(game, location) {
             this.game = game;
+            this.direction = "E";
             this.size = {
                 x: 16,
                 y: 16
@@ -141,29 +240,39 @@
         };
 
         Player.prototype = {
+
+            location: function() {
+                return this.center;
+            },
+
             update: function() {
                 if (this.keyboarder.isDown(this.keyboarder.KEYS.LEFT)) {
+                    this.direction = "W";
+
                     if (this.center.x <= 10) {
                         this.center.x = 8;
                     } else {
                         this.center.x -= 2;
                     }
                 }
-                if (this.keyboarder.isDown(this.keyboarder.KEYS.RIGHT)) {
+                else if (this.keyboarder.isDown(this.keyboarder.KEYS.RIGHT)) {
+                    this.direction = "E";
                     if (this.center.x >= 490) {
                         this.center.x = 492;
                     } else {
                         this.center.x += 2;
                     }
                 }
-                if (this.keyboarder.isDown(this.keyboarder.KEYS.UP)) {
+                else if (this.keyboarder.isDown(this.keyboarder.KEYS.UP)) {
+                    this.direction = "N";
                     if (this.center.y <= 10) {
                         this.center.y = 8;
                     } else {
                         this.center.y -= 2;
                     }
                 }
-                if (this.keyboarder.isDown(this.keyboarder.KEYS.DOWN)) {
+                else if (this.keyboarder.isDown(this.keyboarder.KEYS.DOWN)) {
+                    this.direction = "S";
                     if (this.center.y >= 490) {
                         this.center.y = 492;
                     } else {
@@ -173,16 +282,19 @@
             }
         };
 
-        var Target = function(game, location) {
+        var Target = function(game, firebaseTarget) {
             this.game = game;
             this.size = {
                 x: 10,
                 y: 10
             }; //player size
             this.center = {
-                x: location.x,
-                y: location.y
+                x: firebaseTarget.x,
+                y: firebaseTarget.y
             }; //tells the game where the targets are at the moment, starting at half way through the screen and just above the bottom
+            this.target_id = firebaseTarget.$id;
+            this.is_hit = 0;
+            this.fillStyle = "red";
         };
 
         Target.prototype = {
@@ -191,8 +303,27 @@
             }
         };
 
+        var Wall = function(game, xmin, ymin, xmax, ymax) {
+            this.game = game;
+            this.xmin = xmin;
+            this.ymin = ymin;
+            this.xmax = xmax;
+            this.ymax = ymax;
+        };
+
+        Wall.prototype = {
+            draw: function(screen) {
+                screen.fillStyle = 'white';
+                screen.fillRect(this.xmin, //x coordinate
+                    this.ymin, // y coordinate
+                    this.xmax - this.xmin, //width
+                    this.ymax - this.ymin); //height
+            }
+        };
+
         var drawTank = function(screen, body) {
             //tank body
+            screen.fillStyle = 'green';
             screen.fillRect(body.center.x - body.size.x / 2, //x coordinate
                 body.center.y - body.size.y / 2, // y coordinate
                 body.size.x, body.size.y); //width and hieght
@@ -215,6 +346,7 @@
         };
 
         var drawTarget = function(screen, target) {
+            screen.fillStyle = target.fillStyle;
             screen.fillRect(target.center.x - target.size.x / 2, //x coordinate
                 target.center.y - target.size.y / 2, // y coordinate
                 target.size.x, target.size.y);
@@ -252,4 +384,5 @@
                 b1.center.y - b1.size.y / 2 > b2.center.y + b2.size.y / 2);
         };
     }
+
 })(); // End of IIFE
