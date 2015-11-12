@@ -25,6 +25,7 @@ class Player(models.Model):
     x = models.PositiveSmallIntegerField(default=24)
     y = models.PositiveSmallIntegerField(default=24)
     game = models.ForeignKey(Game, null=True, related_name='players')
+    start_time = models.DateTimeField(auto_now_add=True)
 
     def put(self):
         requests.put(firebase_url + '/games/{}/tanks/{}.json'.format(self.game.game_id,
@@ -65,10 +66,17 @@ class Target(models.Model):
     def __str__(self):
         return str((self.x, self.y))
 
-class Referral(models.Model):
-    url = models.URLField()
-    count = models.PositiveIntegerField(default=1)
+# class Referral(models.Model):
+#     url = models.URLField()
+#     count = models.PositiveIntegerField(default=1)
+#
+#     def add(self):
+#         self.count += 1
+#         self.save()
 
-    def add(self):
-        self.count += 1
-        self.save()
+class RetiredPlayer(models.Model):
+    playtime = models.DateTimeField()
+
+    def __str__(self):
+        "Player played for {} minutes and {} seconds".format(int(self.playtime.seconds/60),
+                                                                self.playtime.seconds % 60)
