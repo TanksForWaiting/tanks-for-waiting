@@ -106,17 +106,17 @@
             // this.tanks.concat(self.refreshTanks(this));
             this.walls = [
               //left outter wall
-              new Wall(this, 40, 40, 45, 460),
-              new Wall(this, 40, 40, 225, 45),
-              new Wall(this, 40, 460, 225, 455),
-              //right outer wall
-              new Wall(this, 275, 40, 460, 45),
-              new Wall(this, 460, 40, 455, 460),
-              new Wall(this, 275, 455, 455, 460),
-              //top center wall
-              new Wall(this, 80, 80, 420, 85),
-              new Wall(this, 80, 80, 85, 225),
-              new Wall(this, 420, 80, 425, 225),
+              // new Wall(this, 40, 40, 45, 460),
+              // new Wall(this, 40, 40, 225, 45),
+              // new Wall(this, 40, 460, 225, 455),
+              // //right outer wall
+              // new Wall(this, 275, 40, 460, 45),
+              // new Wall(this, 460, 40, 455, 460),
+              // new Wall(this, 275, 455, 455, 460),
+              // //top center wall
+              // new Wall(this, 80, 80, 420, 85),
+              // new Wall(this, 80, 80, 85, 225),
+              // new Wall(this, 420, 80, 425, 225),
             // new Wall(this, {
             //     x: 40,
             //     y: 40
