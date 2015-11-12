@@ -76,7 +76,10 @@ class TargetViewSet(viewsets.ModelViewSet):
             player = get_object_or_404(Player, player_id=body)
         except:
             return Response(status=403)
-        target = self.get_object()
+        try:
+            target = self.get_object()
+        except:
+            return Response(status=404)
         game = target.game
         current_location = get(firebase_url + "/games/{}/tanks/{}.json".format(game.game_id, player.player_id)).json()
         target_id = target.target_id
