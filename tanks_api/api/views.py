@@ -85,10 +85,10 @@ class TargetViewSet(viewsets.ModelViewSet):
             return Response(status=403)
         target = self.get_object()
         game = target.game
+        self.perform_destroy(target)
         current_location = get(firebase_url + "/games/{}/tanks/{}.json".format(game.game_id, player.player_id)).json()
         if abs(current_location['x'] - target.x) < 100 and abs(current_location['y'] - target.y) < 100:
             player.add_point()
-        self.perform_destroy(target)
         return Response("Player")
 
 
