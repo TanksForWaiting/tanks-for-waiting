@@ -111,31 +111,18 @@
             this.tanks = [new Player(this, $scope.player)]; //will hold all of the tanks in the game
             // this.tanks.concat(self.refreshTanks(this));
             this.walls = [
-              //left outter wall
-              // new Wall(this, 40, 40, 45, 460),
-              // new Wall(this, 40, 40, 225, 45),
-              // new Wall(this, 40, 460, 225, 455),
-              // //right outer wall
-              // new Wall(this, 275, 40, 460, 45),
-              // new Wall(this, 460, 40, 455, 460),
-              // new Wall(this, 275, 455, 455, 460),
-              // //top center wall
-              // new Wall(this, 80, 80, 420, 85),
-              // new Wall(this, 80, 80, 85, 225),
-              // new Wall(this, 420, 80, 425, 225),
-            // new Wall(this, {
-            //     x: 40,
-            //     y: 40
-            // }, {
-            //     x: 225,
-            //     y: 45
-            // }),
-            // new Wall(this, {
-            //     x: 45,
-            //     y: 460
-            // }, {
-            //     x: 225,
-            //     y: 455,
+              // left outter wall
+              new Wall(this, 40, 40, 45, 460),
+              new Wall(this, 40, 40, 225, 45),
+              new Wall(this, 40, 460, 225, 455),
+              //right outer wall
+              new Wall(this, 275, 40, 460, 45),
+              new Wall(this, 460, 40, 455, 460),
+              new Wall(this, 275, 455, 455, 460),
+              //top center wall
+              new Wall(this, 80, 80, 420, 85),
+              new Wall(this, 80, 80, 85, 225),
+              new Wall(this, 420, 80, 425, 225)
             ];
         };
 
@@ -171,6 +158,7 @@
                 for (i = 0; i < this.targets.length; i++) {
                     if (colliding(thisPlayer, this.targets[i])) {
                         // this.isReady = false;
+                        this.targets[i].fillStyle = 'black';
                         console.log(this.targets[i].target_id);
                         if (this.targets[i].is_hit === 0) {
                             // console.log("HIT!");
@@ -194,6 +182,15 @@
 
             draw: function(screen, gameSize) {
                 screen.clearRect(0, 0, gameSize.x, gameSize.y);
+
+                for (i = 0; i < this.targets.length; i++) { //This loop draws the targets
+                    drawTarget(screen, this.targets[i]);
+                }
+
+                for (i = 0; i < this.walls.length; i++) { //This loop draws the walls
+                    this.walls[i].draw(screen);
+                }
+
                 for (var i = 0; i < this.tanks.length; i++) { //This loop draws the tanks
                     drawTank(screen, this.tanks[i]);
                     if (i === 0) {
@@ -207,12 +204,6 @@
                             drawDrillHeadDown(screen, this.tanks[i]);
                         }
                     }
-                }
-                for (i = 0; i < this.targets.length; i++) { //This loop draws the targets
-                    drawTarget(screen, this.targets[i]);
-                }
-                for (i = 0; i < this.walls.length; i++) { //This loop draws the walls
-                    this.walls[i].draw(screen);
                 }
             },
 
@@ -303,6 +294,7 @@
             }; //tells the game where the targets are at the moment, starting at half way through the screen and just above the bottom
             this.target_id = firebaseTarget.$id;
             this.is_hit = 0;
+            this.fillStyle = "red";
         };
 
         Target.prototype = {
@@ -321,6 +313,7 @@
 
         Wall.prototype = {
             draw: function(screen) {
+                screen.fillStyle = 'white';
                 screen.fillRect(this.xmin, //x coordinate
                     this.ymin, // y coordinate
                     this.xmax - this.xmin, //width
@@ -330,6 +323,7 @@
 
         var drawTank = function(screen, body) {
             //tank body
+            screen.fillStyle = 'green';
             screen.fillRect(body.center.x - body.size.x / 2, //x coordinate
                 body.center.y - body.size.y / 2, // y coordinate
                 body.size.x, body.size.y); //width and hieght
@@ -352,6 +346,7 @@
         };
 
         var drawTarget = function(screen, target) {
+            screen.fillStyle = target.fillStyle;
             screen.fillRect(target.center.x - target.size.x / 2, //x coordinate
                 target.center.y - target.size.y / 2, // y coordinate
                 target.size.x, target.size.y);
