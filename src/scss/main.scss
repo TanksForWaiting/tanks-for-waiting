@@ -115,6 +115,7 @@ body {
       canvas {
         display: block;
         margin-bottom: 1.25%;
+        background-color: black;
       }
       button {
         width: 500px;
@@ -125,7 +126,7 @@ body {
       }
     }
     .graphic {
-      padding-top: 10%;
+      width: 100%;
       img {
       }
     }
