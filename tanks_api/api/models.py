@@ -75,7 +75,9 @@ class Target(models.Model):
 #         self.save()
 
 class RetiredPlayer(models.Model):
-    playtime = models.DurationField()
+    start_time = models.DateTimeField()
+    end_time = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return "Player played for {}".format(self.playtime)
+        playtime = (self.end_time - self.start_time).seconds
+        return "Player played for {} minutes and {} seconds".format(int(playtime / 60), playtime % 60)
