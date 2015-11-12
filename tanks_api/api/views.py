@@ -162,5 +162,8 @@ class TargetViewSet(viewsets.ModelViewSet):
 def retire_player(sender, **kwargs):
     '''Whenever a player is deleted, create a retired player out of them'''
     player = kwargs['instance']
-    delete(firebase_url + "/games/{}/tanks/{}.json".format(player.game.game_id, player.player_id))
+    try:
+        delete(firebase_url + "/games/{}/tanks/{}.json".format(player.game.game_id, player.player_id))
+    except:
+        pass
     RetiredPlayer.objects.create(start_time=player.start_time)
