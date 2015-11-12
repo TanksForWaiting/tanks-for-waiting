@@ -17,6 +17,9 @@ cp src/css/main.css dist/css/
 echo 'Step 3: Copy all the JS'
 mkdir -p dist/js && cp -r src/js dist/
 
+echo 'Step 3: Copy the IMG folde'
+mkdir -p dist/img && cp -r src/img dist/
+
 echo 'Step 4: Copy all the `bower_components/`!'
 
 echo 'Step 4a: Normalize the CSS...'
