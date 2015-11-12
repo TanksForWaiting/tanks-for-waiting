@@ -156,7 +156,7 @@
                 $scope.player.direction= thisPlayer.direction;
 
                 for (i = 0; i < this.targets.length; i++) {
-                    if (colliding(thisPlayer, this.targets[i])) {
+                    if (collidingTarget(thisPlayer, this.targets[i])) {
                         // this.isReady = false;
                         this.targets[i].fillStyle = 'black';
                         console.log(this.targets[i].target_id);
@@ -257,6 +257,13 @@
                 }
                 else if (this.keyboarder.isDown(this.keyboarder.KEYS.RIGHT)) {
                     this.direction = "E";
+
+                    // for (i = 0; i < this.game.walls.length; i++) {
+                    //     if (collidingWall(this, this.game.walls[i])) {
+                    //       console.log("Wall fool!");
+                    //     }
+                    //   }
+
                     if (this.center.x >= 490) {
                         this.center.x = 492;
                     } else {
@@ -265,6 +272,7 @@
                 }
                 else if (this.keyboarder.isDown(this.keyboarder.KEYS.UP)) {
                     this.direction = "N";
+
                     if (this.center.y <= 10) {
                         this.center.y = 8;
                     } else {
@@ -273,6 +281,7 @@
                 }
                 else if (this.keyboarder.isDown(this.keyboarder.KEYS.DOWN)) {
                     this.direction = "S";
+
                     if (this.center.y >= 490) {
                         this.center.y = 492;
                     } else {
@@ -376,13 +385,21 @@
             };
         };
 
-        var colliding = function(b1, b2) {
+        var collidingTarget = function(b1, b2) {
             return !(b1 === b2 ||
                 b1.center.x + b1.size.x / 2 < b2.center.x - b2.size.x / 2 ||
                 b1.center.y + b1.size.y / 2 < b2.center.y - b2.size.y / 2 ||
                 b1.center.x - b1.size.x / 2 > b2.center.x + b2.size.x / 2 ||
                 b1.center.y - b1.size.y / 2 > b2.center.y + b2.size.y / 2);
         };
+
+        // var collidingWall = function(b1, b2) {
+        //     return !(b1 === b2 ||
+        //         b1.x + b1.size.x / 2 < b2.x - b2.size.x / 2 ||
+        //         b1.y + b1.size.y / 2 < b2.y - b2.size.y / 2 ||
+        //         b1.x - b1.size.x / 2 > b2.x + b2.size.x / 2 ||
+        //         b1.y - b1.size.y / 2 > b2.y + b2.size.y / 2);
+        // };
     }
 
 })(); // End of IIFE
