@@ -52,20 +52,6 @@ class PlayerViewSet(viewsets.ModelViewSet):
     queryset = Player.objects.all()
     serializer_class = PlayerSerializer
 
-    def create(self, request, *args, **kwargs):
-        # try:
-        #     try:
-        #         referral = get_object_or_404(Referral, url=request.META.HTTP_REFERER)
-        #         referral.add()
-        #     except status.HTTP_404_NOT_FOUND:
-        #         Referral.objects.create(site=request.META.HTTP_REFERER)
-        # except:
-        #     pass
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        self.perform_create(serializer)
-        headers = self.get_success_headers(serializer.data)
-        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
