@@ -64,7 +64,7 @@ class TargetViewSet(viewsets.ModelViewSet):
         context['game'] = get_object_or_404(Game, game_id=self.kwargs['games_pk'])
         return context
 
-    # @transaction.atomic
+    @transaction.atomic
     def destroy(self, request, *args, **kwargs):
         '''Destroys the target both locally and in firebaseio
         Tries to find a player_id in the payload, if it doesn't it returns a 403 error.
@@ -78,16 +78,21 @@ class TargetViewSet(viewsets.ModelViewSet):
             return Response(status=403)
         target = self.get_object()
         game = target.game
-        target_id = target.target_id
-        self.perform_destroy(target)
         current_location = get(firebase_url + "/games/{}/tanks/{}.json".format(game.game_id, player.player_id)).json()
+        target_id = target.target_id
         if abs(current_location['x'] - target.x) < 100 and abs(current_location['y'] - target.y) < 100:
             player.add_point()
-        delete(firebase_url + "/games/{}/targets/{}.json".format(game.game_id, target_id))
-        new_target = Target.objects.create(game=game)
-        new_target.put()
-        return Response("Player")
-
+            self.perform_destroy(target)
+            delete(firebase_url + "/games/{}/targets/{}.json".format(game.game_id, target_id))
+            new_target = Target.objects.create(game=game)
+            new_target.put()
+            return Response("Player")
+        else:
+            self.perform_destroy(target)
+            delete(firebase_url +"/games/{}/targets/{}.json".format(game.game_id, target_id))
+            new_target = Target.objects.create(game=game)
+            new_target.put()
+            return Response("Else")
 
 
 # @receiver(post_save, sender=Game)
