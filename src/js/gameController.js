@@ -39,6 +39,12 @@
                                     console.log($scope.player); // { foo: "bar" }
                                     new Game("screen");
                                 });
+                                firebaseScoreRef = new Firebase(FIREBASE_SERVER_URL + "/games/" + gameID + "/scores/" + playerID);
+                                var scoreObj = $firebaseObject(firebaseScoreRef);
+                                scoreObj.$bindTo($scope, "score").then(function() {
+                                    console.log($scope.score); // { foo: "bar" }
+                                    // new Game("screen");
+                                });
                             },
                             function(errobj) {
                                 alert("Game request failed: " + JSON.stringify(errobj, null, 2));
