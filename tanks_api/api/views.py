@@ -4,8 +4,8 @@ from rest_framework import viewsets
 from rest_framework.mixins import CreateModelMixin, ListModelMixin, RetrieveModelMixin
 from .serializers import GameSerializer, PlayerSerializer, TargetSerializer
 from .models import Game, Player, Target
-from django.db.models.signals import post_delete
-from django.dispatch import receiver
+# from django.db.models.signals import post_save
+# from django.dispatch import receiver
 import requests
 from rest_framework.response import Response
 # from rest_framework.decorators import api_view
@@ -82,9 +82,17 @@ class TargetViewSet(viewsets.ModelViewSet):
         target_id = target.target_id
         if abs(current_location['x'] - target.x) < 100 and abs(current_location['y'] - target.y) < 100:
             player.add_point()
-        self.perform_destroy(target)
-        delete(firebase_url + "/games/{}/targets/{}.json".format(game.game_id, target_id))
-        return Response("Player")
+            self.perform_destroy(target)
+            delete(firebase_url + "/games/{}/targets/{}.json".format(game.game_id, target_id))
+            new_target = Target.objects.create(game=game)
+            new_target.put()
+            return Response("Player")
+        else:
+            self.perform_destroy(target)
+            delete(firebase_url +"/games/{}/targets/{}.json".format(game.game_id, target_id))
+            new_target = Target.objects.create(game=game)
+            new_target.put()
+            return Response("Else")
 
 
 # @receiver(post_save, sender=Game)
@@ -117,11 +125,12 @@ class TargetViewSet(viewsets.ModelViewSet):
         #     new_target.save()
 
 
-@receiver(post_delete, sender=Target)
-def put_targets(sender, **kwargs):
-    '''Whever a target is saved locally if it has a game assigned it is put
-    into firebase'''
-    target = kwargs['instance']
-    game = target.game
-    new_target = Target.objects.create(game=game)
-    new_target.put()
+# @receiver(post_save, sender=Target)
+# def put_targets(sender, **kwargs):
+#     '''Whever a target is saved locally if it has a game assigned it is put
+#     into firebase'''
+#     new_target = kwargs['instance']
+#     if new_target.game != None:
+#         new_target.put()
+#     else:
+#         pass
