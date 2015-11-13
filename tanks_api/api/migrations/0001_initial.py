@@ -14,26 +14,35 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Game',
             fields=[
-                ('game_id', models.UUIDField(primary_key=True, editable=False, serialize=False, default=uuid.uuid4, unique=True)),
+                ('game_id', models.UUIDField(unique=True, serialize=False, editable=False, primary_key=True, default=uuid.uuid4)),
             ],
         ),
         migrations.CreateModel(
             name='Player',
             fields=[
-                ('player_id', models.UUIDField(primary_key=True, editable=False, serialize=False, default=uuid.uuid4, unique=True)),
+                ('player_id', models.UUIDField(unique=True, serialize=False, editable=False, primary_key=True, default=uuid.uuid4)),
                 ('score', models.PositiveSmallIntegerField(default=0)),
                 ('x', models.PositiveSmallIntegerField(default=24)),
                 ('y', models.PositiveSmallIntegerField(default=24)),
-                ('game', models.ForeignKey(related_name='players', to='api.Game', null=True)),
+                ('start_time', models.DateTimeField(auto_now_add=True)),
+                ('game', models.ForeignKey(to='api.Game', null=True, related_name='players')),
+            ],
+        ),
+        migrations.CreateModel(
+            name='RetiredPlayer',
+            fields=[
+                ('id', models.AutoField(serialize=False, primary_key=True, verbose_name='ID', auto_created=True)),
+                ('start_time', models.DateTimeField()),
+                ('end_time', models.DateTimeField(auto_now_add=True)),
             ],
         ),
         migrations.CreateModel(
             name='Target',
             fields=[
-                ('target_id', models.UUIDField(primary_key=True, editable=False, serialize=False, default=uuid.uuid4, unique=True)),
+                ('target_id', models.UUIDField(unique=True, serialize=False, editable=False, primary_key=True, default=uuid.uuid4)),
                 ('x', models.PositiveSmallIntegerField()),
                 ('y', models.PositiveSmallIntegerField()),
-                ('game', models.ForeignKey(related_name='targets', to='api.Game', null=True)),
+                ('game', models.ForeignKey(to='api.Game', null=True, related_name='targets')),
             ],
         ),
     ]
