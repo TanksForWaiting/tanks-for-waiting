@@ -31,7 +31,7 @@ class Player(models.Model):
                                                                      self.player_id), json={"x": self.x, "y": self.y, "direction": "E"})
         requests.put(firebase_url + '/games/{}/scores/{}.json'.format(
             self.game.game_id, self.player_id), data=str(self.score))
-            
+
     def add_point(self):
         '''When a player gets a point it is recorded locally as well as
         put to the firebase database.'''
@@ -51,11 +51,21 @@ class Target(models.Model):
     x = models.PositiveSmallIntegerField()
     y = models.PositiveSmallIntegerField()
 
+    def get_target_coordinates(self):
+        targets_list = [(100, 20), (20,100), (250, 20), (20,250), (20, 400),(400,20),
+                        (100, 480), (250,480), (400,480),(480,100), (480,250), (480,400),
+                        (60,60),(440,440),(60,440),(440,60), (250,250),(200,225),(200,275),
+                        (300, 225), (300,275), (250,400), (250,100)]
+        for target in self.game.targets.all():
+            targets_list.remove((target.x, target.y))
+        if targets_list == []:
+            targets_list = [(250, 250)]
+        self.x, self.y = random.choice(targets_list)
+
     def save(self, *args, **kwargs):
         '''When you save a target it generates a random point between 20 and 480
         where it will spawn on both x and y axes.'''
-        self.x = random.randint(20, 480)
-        self.y = random.randint(20, 480)
+        self.get_target_coordinates()
         super(Target, self).save(*args, **kwargs)
 
     def put(self):
