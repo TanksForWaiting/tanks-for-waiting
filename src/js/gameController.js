@@ -70,69 +70,69 @@
             firebaseTargetsRef = new Firebase(FIREBASE_SERVER_URL + "/games/" + gameID + "/targets/");
             var targetsObj = $firebaseObject(firebaseTargetsRef);
             $firebaseArray(firebaseTargetsRef).$loaded()
-              .then(function(targets) {
-                self.targets = self.refreshTargets(this, targets);
-                $scope.gameRunning = true;
-                $interval(function() {
-                    if (self.isReady) {
-                        self.update(); //updates the screen
-                        self.draw(screen, gameSize); //based upon what's happening in the game
-                    }
-                }, 16.7);
-              }, function() {
-                console.log("Failed to load targets");
-              });
+                .then(function(targets) {
+                    self.targets = self.refreshTargets(this, targets);
+                    $scope.gameRunning = true;
+                    $interval(function() {
+                        if (self.isReady) {
+                            self.update(); //updates the screen
+                            self.draw(screen, gameSize); //based upon what's happening in the game
+                        }
+                    }, 16.7);
+                }, function() {
+                    console.log("Failed to load targets");
+                });
 
             var targetAdded = function() {
-              if ($scope.gameRunning) {
-                console.log("it was hit");
-                $firebaseArray(firebaseTargetsRef).$loaded()
-                  .then(function(targets) {
-                    self.targets = self.refreshTargets(this, targets);
-                  });
-              }
+                if ($scope.gameRunning) {
+                    console.log("it was hit");
+                    $firebaseArray(firebaseTargetsRef).$loaded()
+                        .then(function(targets) {
+                            self.targets = self.refreshTargets(this, targets);
+                        });
+                }
 
             };
             var targetRemoved = function(dataSnapshot) {
-              var destroyedTarget = dataSnapshot.val();
-              //draw explosion at x/y location ( destroyedTarget.x, destroyedTarget.y )
-              // new Explosion(location, duration)
+                var destroyedTarget = dataSnapshot.val();
+                //draw explosion at x/y location ( destroyedTarget.x, destroyedTarget.y )
+                // new Explosion(location, duration)
             };
 
             firebaseTargetsRef.on("child_added", targetAdded,
-             function (err) {
-              console.log("failed");
-            });
+                function(err) {
+                    console.log("failed");
+                });
             firebaseTargetsRef.on("child_removed", targetRemoved,
-             function (err) {
-              console.log("failed");
-            });
+                function(err) {
+                    console.log("failed");
+                });
 
             this.tanks = [new Player(this, $scope.player)]; //will hold all of the tanks in the game
             // this.tanks.concat(self.refreshTanks(this));
             this.walls = [
-              // left outter wall
-              new Wall(this, 40, 40, 45, 460),
-              new Wall(this, 40, 40, 225, 45),
-              new Wall(this, 40, 460, 225, 455),
-              //right outer wall
-              new Wall(this, 275, 40, 460, 45),
-              new Wall(this, 460, 40, 455, 460),
-              new Wall(this, 275, 455, 455, 460),
-              //top center wall
-              new Wall(this, 80, 80, 420, 85),
-              new Wall(this, 80, 80, 85, 225),
-              new Wall(this, 415, 80, 420, 225),
-              //bottom center wall
-              new Wall(this, 80, 275, 85, 420),
-              new Wall(this, 85, 415, 420, 420),
-              new Wall(this, 415, 275, 420, 420),
-              //left center wall
-              new Wall(this, 225, 145, 230, 350),
-              new Wall(this, 120, 250, 225, 255),
-              //right center wall
-              new Wall(this, 275, 145, 280, 350),
-              new Wall(this, 275, 250, 380, 255)
+                // left outter wall
+                new Wall(this, 40, 40, 45, 460),
+                new Wall(this, 40, 40, 225, 45),
+                new Wall(this, 40, 460, 225, 455),
+                //right outer wall
+                new Wall(this, 275, 40, 460, 45),
+                new Wall(this, 460, 40, 455, 460),
+                new Wall(this, 275, 455, 455, 460),
+                //top center wall
+                new Wall(this, 80, 80, 420, 85),
+                new Wall(this, 80, 80, 85, 225),
+                new Wall(this, 415, 80, 420, 225),
+                //bottom center wall
+                new Wall(this, 80, 275, 85, 420),
+                new Wall(this, 85, 415, 420, 420),
+                new Wall(this, 415, 275, 420, 420),
+                //left center wall
+                new Wall(this, 225, 145, 230, 350),
+                new Wall(this, 120, 250, 225, 255),
+                //right center wall
+                new Wall(this, 275, 145, 280, 350),
+                new Wall(this, 275, 250, 380, 255)
             ];
         };
 
@@ -163,7 +163,7 @@
                 };
                 $scope.player.x = thisPlayer.location().x;
                 $scope.player.y = thisPlayer.location().y;
-                $scope.player.direction= thisPlayer.direction;
+                $scope.player.direction = thisPlayer.direction;
 
                 for (i = 0; i < this.targets.length; i++) {
                     if (collidingTarget(thisPlayer, this.targets[i])) {
@@ -186,7 +186,7 @@
                         // this.targets.splice(i, 1);
                     }
                 }
-                this.tanks = this.tanks.slice(0, 1);//.concat(this.refreshTanks(this)); --add back in for multiplayer
+                this.tanks = this.tanks.slice(0, 1); //.concat(this.refreshTanks(this)); --add back in for multiplayer
                 // this.targets = this.refreshTargets(this);
             },
 
@@ -256,43 +256,49 @@
             },
 
             update: function() {
+                var wallHit = false;
+                for (i = 0; i < this.game.walls.length; i++) {
+                    if (collidingWall(this, this.game.walls[i])) {
+                        console.log("Wall!");
+                        wallHit = true;
+                        break;
+                    }
+                }
+
                 if (this.keyboarder.isDown(this.keyboarder.KEYS.LEFT)) {
                     this.direction = "W";
-
-                    if (this.center.x <= 10) {
+                    if (wallHit) {
+                        this.center.x += 8;
+                    } else if (this.center.x <= 10) {
                         this.center.x = 8;
                     } else {
                         this.center.x -= 2;
                     }
-                }
-                else if (this.keyboarder.isDown(this.keyboarder.KEYS.RIGHT)) {
+                } else if (this.keyboarder.isDown(this.keyboarder.KEYS.RIGHT)) {
                     this.direction = "E";
-
-                    // for (i = 0; i < this.game.walls.length; i++) {
-                    //     if (collidingWall(this, this.game.walls[i])) {
-                    //       console.log("Wall fool!");
-                    //     }
-                    //   }
-
-                    if (this.center.x >= 490) {
+                    if (wallHit) {
+                        this.center.x -= 8;
+                    } else if (this.center.x >= 490) {
                         this.center.x = 492;
                     } else {
                         this.center.x += 2;
                     }
-                }
-                else if (this.keyboarder.isDown(this.keyboarder.KEYS.UP)) {
+                } else if (this.keyboarder.isDown(this.keyboarder.KEYS.UP)) {
                     this.direction = "N";
 
-                    if (this.center.y <= 10) {
+                    if (wallHit) {
+                        this.center.y += 8;
+                    } else if (this.center.y <= 10) {
                         this.center.y = 8;
                     } else {
                         this.center.y -= 2;
                     }
-                }
-                else if (this.keyboarder.isDown(this.keyboarder.KEYS.DOWN)) {
+                } else if (this.keyboarder.isDown(this.keyboarder.KEYS.DOWN)) {
                     this.direction = "S";
 
-                    if (this.center.y >= 490) {
+                    if (wallHit) {
+                        this.center.y -= 8;
+                    } else if (this.center.y >= 490) {
                         this.center.y = 492;
                     } else {
                         this.center.y += 2;
@@ -373,13 +379,27 @@
 
         var Keyboarder = function() { //handles keyboard input
             var keyState = {}; //records if any key that's been pressed is pressed or released
+            var keyPressed = false;
+            var self = this;
 
             window.onkeydown = function(e) {
-                keyState[e.keyCode] = true;
+                if (e.keyCode >= self.KEYS.LEFT &&
+                    e.keyCode <= self.KEYS.DOWN &&
+                    !keyPressed) {
+                    keyState[e.keyCode] = true;
+                    keyPressed = true;
+                    e.preventDefault();
+                }
             };
 
             window.onkeyup = function(e) {
-                keyState[e.keyCode] = false;
+                if (e.keyCode >= self.KEYS.LEFT &&
+                    e.keyCode <= self.KEYS.DOWN &&
+                    keyPressed) {
+                    keyState = {};
+                    keyPressed = false;
+                    e.preventDefault();
+                }
             };
 
             this.isDown = function(keyCode) {
@@ -390,8 +410,7 @@
                 LEFT: 37,
                 UP: 38,
                 RIGHT: 39,
-                DOWN: 40,
-                SPACE: 32
+                DOWN: 40
             };
         };
 
@@ -403,13 +422,17 @@
                 b1.center.y - b1.size.y / 2 > b2.center.y + b2.size.y / 2);
         };
 
-        // var collidingWall = function(b1, b2) {
-        //     return !(b1 === b2 ||
-        //         b1.x + b1.size.x / 2 < b2.x - b2.size.x / 2 ||
-        //         b1.y + b1.size.y / 2 < b2.y - b2.size.y / 2 ||
-        //         b1.x - b1.size.x / 2 > b2.x + b2.size.x / 2 ||
-        //         b1.y - b1.size.y / 2 > b2.y + b2.size.y / 2);
-        // };
+        var collidingWall = function(b1, b2) {
+            return (((b1.center.x - b1.size.x / 2) < b2.xmax) &&
+                ((b1.center.x + b1.size.x / 2) > b2.xmin) &&
+                ((b1.center.y - b1.size.y / 2) < b2.ymax) &&
+                ((b1.center.y + b1.size.y / 2) > b2.ymin));
+            // return !(
+            //     b1.center.x + b1.size.x / 2 <= b2.xmin ||
+            //     b1.center.y + b1.size.y / 2 <= b2.ymax ||
+            //     b1.center.x - b1.size.x / 2 >= b2.xmax ||
+            //     b1.center.y - b1.size.y / 2 >= b2.ymin);
+        };
     }
 
 })(); // End of IIFE
