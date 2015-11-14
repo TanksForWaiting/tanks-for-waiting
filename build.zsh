@@ -4,6 +4,7 @@ rm -rf dist/*
 
 echo 'Step 1: Copy all the HTML'
 cp src/index.html dist/
+cp src/embedTFW.html dist/
 mkdir dist/partials/
 cp -r src/partials dist/
 
