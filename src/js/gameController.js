@@ -383,6 +383,7 @@
             var self = this;
 
             window.onkeydown = function(e) {
+                e.preventDefault();
                 if (e.keyCode >= self.KEYS.LEFT &&
                     e.keyCode <= self.KEYS.DOWN &&
                     !keyPressed) {
@@ -393,12 +394,12 @@
             };
 
             window.onkeyup = function(e) {
+                e.preventDefault();
                 if (e.keyCode >= self.KEYS.LEFT &&
                     e.keyCode <= self.KEYS.DOWN &&
                     keyPressed) {
                     keyState = {};
                     keyPressed = false;
-                    e.preventDefault();
                 }
             };
 
