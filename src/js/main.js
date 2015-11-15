@@ -1,8 +1,8 @@
 ;(function() { //IIFE
 
   $('#button').click(function() {
-    $('#spin-one').removeClass('hide-me');
-    $('#spin-two').removeClass('hide-me');
+    $('#spin-one').removeClass('tfw-hide-me');
+    $('#spin-two').removeClass('tfw-hide-me');
   });
 
 angular.module('tanks-for-waiting', ["firebase"]);
