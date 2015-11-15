@@ -25,11 +25,8 @@
 
     <!-- Add your site or application content here -->
     <div class="container" ng-app="tanks-for-waiting" ng-controller="GameController">
-        <div class="grid">
-          <div class="col-left">
-            <div class="instructions">
             <h4>Player Score:<span ng-show="gameRunning">{{score.$value}}</span></h4>
-            <p>
+            <!-- <p>
               While you're waiting for our next available service representative
               to get in touch with you why not play a game to stay entertained?
               It won't disrupt your place in our queue and you'll be alerted
@@ -43,21 +40,9 @@
             <h4>Instructions</h4>
             <p>
               Maneuver about the map and run over targets to score points.
-            </p>
-            </div>
-          </div>
-          <div class="col-middle">
-            <div class="game">
-              <canvas id="screen" width="500" height="500" style="border:2px solid white;"></canvas>
+            </p> -->
+              <canvas id="screen" width="500" height="500" style="border:2px solid white;" style="background-color: black"></canvas>
               <button id="button" ng-click="startGame()" ng-hide="gameRunning"><i id="spin-one" class="fa fa-cog fa-spin hide-me"></i>&nbsp;Click to Start Driving your Tank!&nbsp;<i id="spin-two" class="fa fa-cog fa-spin hide-me"></i></button>
-            </div>
-          </div>
-          <div class="col-right">
-            <div class="graphic">
-              <img src="img/tank.png">
-            </div>
-          </div>
-        </div>
     </div>
 
     <script src="../bower_components/jquery/dist/jquery.js"></script>
