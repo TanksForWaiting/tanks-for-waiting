@@ -1,0 +1,24 @@
+<div id="tanks-for-waiting">
+    <link href='https://fonts.googleapis.com/css?family=Press+Start+2P' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="https://tanks-for-waiting.firebaseapp.com/bower_components/font-awesome/css/font-awesome.min.css"/>
+    <script src="https://tanks-for-waiting.firebaseapp.com/bower_components/jquery/dist/jquery.js"></script>
+    <script src="https://tanks-for-waiting.firebaseapp.com/bower_components/angular/angular.js"></script>
+    <script src="https://tanks-for-waiting.firebaseapp.com/bower_components/angular-route/angular-route.js"></script>
+    <script src="https://tanks-for-waiting.firebaseapp.com/bower_components/firebase/firebase.js"></script>
+    <script src="https://tanks-for-waiting.firebaseapp.com/bower_components/angularfire/dist/angularfire.min.js"></script>
+    <script src="https://tanks-for-waiting.firebaseapp.com/js/main.js"></script>
+    <script src="https://tanks-for-waiting.firebaseapp.com/js/gameController.js"></script>
+    <div class="tfw-game" ng-app="tanks-for-waiting" ng-controller="GameController">
+        <div class="tfw-score">
+        <p>Player Score:
+            <span ng-show="gameRunning">{{score.$value}}</span>
+        </p>
+        </div>
+        <div class="tfw-canvas">
+          <canvas id="screen" width="500" height="500" style="background-color: black"></canvas>
+        </div>
+        <div class="tfw-button">
+        <button id="tfw-game-button" ng-click="startGame()" ng-hide="gameRunning"><i id="spin-one" class="fa fa-cog fa-spin tfw-hide-me"></i>&nbsp;Click to Start Driving your Tank!&nbsp;<i id="spin-two" class="fa fa-cog fa-spin tfw-hide-me"></i></button>
+        </div>
+    </div>
+</div>

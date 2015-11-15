@@ -3,7 +3,7 @@ echo 'Step 0: Kill ALL THE THINGS... in `dist/`'
 rm -rf dist/*
 
 echo 'Step 1: Copy all the HTML'
-cp src/index.html dist/
+cp src/embedTFW.html dist/
 mkdir dist/partials/
 cp -r src/partials dist/
 
@@ -16,6 +16,9 @@ cp src/css/main.css dist/css/
 
 echo 'Step 3: Copy all the JS'
 mkdir -p dist/js && cp -r src/js dist/
+
+# echo 'Step 3: Copy the IMG folde'
+# mkdir -p dist/img && cp -r src/img dist/
 
 echo 'Step 4: Copy all the `bower_components/`!'
 
@@ -36,7 +39,13 @@ cp bower_components/angular-route/angular-route.js dist/bower_components/angular
 mkdir -p dist/bower_components/modernizr/src/
 cp bower_components/modernizr/modernizr.js dist/bower_components/modernizr/modernizr.js
 
-mkdir -p dist/bower_components/font-awesome/src/
+mkdir -p dist/bower_components/font-awesome/css/
 cp bower_components/font-awesome/css/font-awesome.min.css dist/bower_components/font-awesome/css/font-awesome.min.css
+
+mkdir -p dist/bower_components/firebase/
+cp bower_components/firebase/firebase.js dist/bower_components/firebase/firebase.js
+
+mkdir -p dist/bower_components/angularfire/dist/
+cp bower_components/angularfire/dist/angularfire.min.js dist/bower_components/angularfire/dist/angularfire.min.js
 
 npm start
