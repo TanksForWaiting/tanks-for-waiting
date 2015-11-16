@@ -4,8 +4,8 @@ from rest_framework import viewsets
 from rest_framework.mixins import CreateModelMixin, ListModelMixin, RetrieveModelMixin
 from .serializers import GameSerializer, PlayerSerializer, TargetSerializer
 from .models import Game, Player, Target
-# from django.db.models.signals import post_save
-# from django.dispatch import receiver
+from django.db.models.signals import post_delete
+from django.dispatch import receiver
 import requests
 from rest_framework.response import Response
 # from rest_framework.decorators import api_view
@@ -50,6 +50,13 @@ class PlayerViewSet(viewsets.ModelViewSet):
     queryset = Player.objects.all()
     serializer_class = PlayerSerializer
 
+
+    # def destroy(self, request, *args, **kwargs):
+    #     instance = self.get_object()
+    #     RetiredPlayer.objects.create(playtime=instance.start_time - datetime.now())
+    #     self.perform_destroy(instance)
+    #     return Response(status=status.HTTP_204_NO_CONTENT)
+
 class TargetViewSet(viewsets.ModelViewSet):
     queryset = Target.objects.all()
     serializer_class = TargetSerializer
@@ -78,59 +85,18 @@ class TargetViewSet(viewsets.ModelViewSet):
             return Response(status=403)
         target = self.get_object()
         game = target.game
+        self.perform_destroy(target)
         current_location = get(firebase_url + "/games/{}/tanks/{}.json".format(game.game_id, player.player_id)).json()
-        target_id = target.target_id
         if abs(current_location['x'] - target.x) < 100 and abs(current_location['y'] - target.y) < 100:
             player.add_point()
-            self.perform_destroy(target)
-            delete(firebase_url + "/games/{}/targets/{}.json".format(game.game_id, target_id))
-            new_target = Target.objects.create(game=game)
-            new_target.put()
-            return Response("Player")
-        else:
-            self.perform_destroy(target)
-            delete(firebase_url +"/games/{}/targets/{}.json".format(game.game_id, target_id))
-            new_target = Target.objects.create(game=game)
-            new_target.put()
-            return Response("Else")
+        return Response("Player")
 
 
-# @receiver(post_save, sender=Game)
-# def put_tanks(sender, **kwargs):
-#     '''After saving a game if it has players it creates the game in firebase.
-#     It ensures all of the targets in the game locally are in firebase and then
-#     creates more until there are 5.  It also puts each player into firebase.'''
-#     game = kwargs['instance']
-#     if len(game.players.all()) == 0:
-#         pass
-    # else:
-    #     current_player = 1
-        # for player in game.players.all(): #Puts players into starting locations.
-        #     # if current_player == 1:
-        #     # player.put(game_id, player_id, x=1, y=1, direction="E")
-        #     put(firebase_url + '/games/{}/tanks/{}.json'.format(game.game_id, player.player_id), json={"x":20,"y":20,"direction":"E"})
-        #     # elif current_player == 2:
-        #     #     put(firebase_url + '/games/{}/tanks/{}.json'.format(game.game_id, player.player_id), json={"x":480,"y":480,"direction":"W"})
-        #     # elif current_player == 3:
-        #     #     put(firebase_url + '/games/{}/tanks/{}.json'.format(game.game_id, player.player_id), json={"x":480,"y":20,"direction":"W"})
-        #     # else:
-        #     #     put(firebase_url + '/games/{}/tanks/{}.json'.format(game.game_id, player.player_id), json={"x":20,"y":480,"direction":"E"})
-        #     put(firebase_url + '/games/{}/scores/{}.json'.format(game.game_id, player.player_id), data=str(player.score))
-        #     current_player += 1
-    # else:
-    #     for target in game.targets.all():
-    #         target.put()
-        # while len(game.targets.all()) < 5:
-        #     new_target = Target(game=game)
-        #     new_target.save()
-
-
-# @receiver(post_save, sender=Target)
-# def put_targets(sender, **kwargs):
-#     '''Whever a target is saved locally if it has a game assigned it is put
-#     into firebase'''
-#     new_target = kwargs['instance']
-#     if new_target.game != None:
-#         new_target.put()
-#     else:
-#         pass
+@receiver(post_delete, sender=Target)
+def put_targets(sender, **kwargs):
+    '''Whever a target is saved locally if it has a game assigned it is put
+    into firebase'''
+    target = kwargs['instance']
+    delete(firebase_url + "/games/{}/targets/{}.json".format(target.game.game_id, target.target_id))
+    new_target = Target.objects.create(game=target.game)
+    new_target.put()
