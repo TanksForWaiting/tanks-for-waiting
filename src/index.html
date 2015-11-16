@@ -1,80 +1,24 @@
-<!doctype html>
-<html class="no-js" lang="">
-
-<head>
+<div id="tanks-for-waiting">
     <link href='https://fonts.googleapis.com/css?family=Press+Start+2P' rel='stylesheet' type='text/css'>
-    <meta charset="utf-8">
-    <meta http-equiv="x-ua-compatible" content="ie=edge">
-    <title>Tanks for Waiting</title>
-    <meta name="description" content="">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-
-    <link rel="apple-touch-icon" href="apple-touch-icon.png">
-    <!-- Place favicon.ico in the root directory -->
-
-    <link rel="stylesheet" href="../bower_components/normalize-css/normalize.css" />
-    <link rel="stylesheet" href="../bower_components/font-awesome/css/font-awesome.min.css" />
-    <link rel="stylesheet" href="css/main.css">
-    <!-- <script src="../bower_components/modernizr/src/Modernizr.js"></script> -->
-</head>
-
-<body>
-    <!--[if lt IE 8]>
-            <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
-        <![endif]-->
-
-    <!-- Add your site or application content here -->
-    <div class="container" ng-app="tanks-for-waiting" ng-controller="GameController">
-            <h4>Player Score:<span ng-show="gameRunning">{{score.$value}}</span></h4>
-            <!-- <p>
-              While you're waiting for our next available service representative
-              to get in touch with you why not play a game to stay entertained?
-              It won't disrupt your place in our queue and you'll be alerted
-              when your representative is ready. Tanks for Waiting!
+    <link rel="stylesheet" href="https://tanks-for-waiting.firebaseapp.com/bower_components/font-awesome/css/font-awesome.min.css" />
+    <script src="https://tanks-for-waiting.firebaseapp.com/bower_components/jquery/dist/jquery.js"></script>
+    <script src="https://tanks-for-waiting.firebaseapp.com/bower_components/angular/angular.js"></script>
+    <script src="https://tanks-for-waiting.firebaseapp.com/bower_components/angular-route/angular-route.js"></script>
+    <script src="https://tanks-for-waiting.firebaseapp.com/bower_components/firebase/firebase.js"></script>
+    <script src="https://tanks-for-waiting.firebaseapp.com/bower_components/angularfire/dist/angularfire.min.js"></script>
+    <script src="https://tanks-for-waiting.firebaseapp.com/js/main.js"></script>
+    <script src="https://tanks-for-waiting.firebaseapp.com/js/gameController.js"></script>
+    <div class="tfw-game" ng-app="tanks-for-waiting" ng-controller="GameController">
+        <div class="tfw-score">
+            <p>Player Score:
+                <span ng-show="gameRunning">{{score.$value}}</span>
             </p>
-            <h4>Controls</h4>
-            <p>
-              Use the arrow keys to control the direction and movement of your
-              tank.
-            </p>
-            <h4>Instructions</h4>
-            <p>
-              Maneuver about the map and run over targets to score points.
-            </p> -->
-              <canvas id="screen" width="500" height="500" style="border:2px solid white;" style="background-color: black"></canvas>
-              <button id="button" ng-click="startGame()" ng-hide="gameRunning"><i id="spin-one" class="fa fa-cog fa-spin hide-me"></i>&nbsp;Click to Start Driving your Tank!&nbsp;<i id="spin-two" class="fa fa-cog fa-spin hide-me"></i></button>
+        </div>
+        <div class="tfw-canvas">
+            <canvas id="screen" width="500" height="500" style="background-color: black"></canvas>
+        </div>
+        <div class="tfw-button">
+            <button id="tfw-game-button" ng-click="startGame()" ng-hide="gameRunning"><i id="spin-one" class="fa fa-cog fa-spin tfw-hide-me"></i>&nbsp;Click to Start Driving your Tank!&nbsp;<i id="spin-two" class="fa fa-cog fa-spin tfw-hide-me"></i></button>
+        </div>
     </div>
-
-    <script src="../bower_components/jquery/dist/jquery.js"></script>
-    <script src="../bower_components/angular/angular.js"></script>
-    <script src="../bower_components/angular-route/angular-route.js"></script>
-    <script src="../bower_components/firebase/firebase.js"></script>
-    <script src="../bower_components/angularfire/dist/angularfire.min.js"></script>
-
-    <script>
-        window.jQuery || document.write('<script src="js/vendor/jquery-1.11.2.min.js"><\/script>')
-    </script>
-    <script src="js/plugins.js"></script>
-    <script src="js/main.js"></script>
-    <script src="js/gameController.js"></script>
-
-    <!-- Google Analytics: change UA-XXXXX-X to be your site's ID. -->
-    <script>
-        (function(b, o, i, l, e, r) {
-            b.GoogleAnalyticsObject = l;
-            b[l] || (b[l] =
-                function() {
-                    (b[l].q = b[l].q || []).push(arguments)
-                });
-            b[l].l = +new Date;
-            e = o.createElement(i);
-            r = o.getElementsByTagName(i)[0];
-            e.src = 'https://www.google-analytics.com/analytics.js';
-            r.parentNode.insertBefore(e, r)
-        }(window, document, 'script', 'ga'));
-        ga('create', 'UA-XXXXX-X', 'auto');
-        ga('send', 'pageview');
-    </script>
-</body>
-
-</html>
+</div>

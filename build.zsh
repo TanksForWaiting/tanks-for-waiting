@@ -3,7 +3,7 @@ echo 'Step 0: Kill ALL THE THINGS... in `dist/`'
 rm -rf dist/*
 
 echo 'Step 1: Copy all the HTML'
-cp src/embedTFW.html dist/
+cp src/index.html dist/
 mkdir dist/partials/
 cp -r src/partials dist/
 
@@ -13,9 +13,6 @@ npm run sass
 echo 'Step 2b: Copy CSS into `dist/`?'
 mkdir dist/css/
 cp src/css/main.css dist/css/
-
-mkdir dist/audio/
-cp src/audio/tanks8bit.wav dist/audio/
 
 echo 'Step 3: Copy all the JS'
 mkdir -p dist/js && cp -r src/js dist/
