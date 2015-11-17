@@ -1,5 +1,12 @@
 {
   "firebase": "tanks-for-waiting",
+  "headers": [ {
+    "source" : "**",
+    "headers" : [ {
+      "key" : "Access-Control-Allow-Origin",
+      "value" : "*"
+    } ]
+ } ],
   "public": "dist",
   "ignore": [
     "firebase.json",
